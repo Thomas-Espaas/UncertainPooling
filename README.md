@@ -1,7 +1,7 @@
 # UncertainPooling
 A package to analyse and solve pooling problems when subjected to uncertain parameter values. There are many ways in which uncertainty can affect the pooling problem and the quality of the solution obtained using various methods for solving the problem. The focus of the four problems/models already implemented in this project is on uncertainty in the quality of the feed streams into the network, and how it affects the satisfaction of the quality constraints on the product streams. More details will hopefully soon be available in a published research article.
 
-![Pooling_structure.pdf](https://github.com/Thomas-Espaas/UncertainPooling/files/10767641/Pooling_structure.pdf)
+<img src="https://user-images.githubusercontent.com/46780228/219687176-1451b462-2a8f-46b1-aa7a-7e62e79e744a.jpg" width="500" >
 
 Hopefully, the examples are sufficient for others to create models for their specific pooling system. Important things to note is that not only does the network structure need to be defined, but also a consequence of products violating the quality constraints also needs to be encoded. The default in all the models is that the product cannot be sold if it violates the quality constraints, but no cost is incurred in disposing of it. Also, a model should also be constructed in the UncertainModel class to evaluate the performance of a solution obtained using a proxy model when the true nature of the uncertainty is respected.
 
