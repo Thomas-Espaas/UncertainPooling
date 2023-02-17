@@ -13,3 +13,11 @@ Adjustable parameters:
   * Scenario generation method - passed as an optional input to the class. The included options are 'Lee' which follows the method outlined in the 2010 paper by Li, Armagan, Tomasgard and Barton. The other is a "basic" approach that takes a value for the for the "outer" scenarios and calculates their deviation from the mean such that the standard deviation of the discrete distribution is equal to that of the continuous distribution. The basic approach is only valid for the case when the number of scenarios is 3.
 * Robust approach:
   * Uncertainty set radius - The "radius" used for the uncertainty set. The model is currently only set up for an uncertainty set based on the infinity norm of the vector of uncertain feed qualities. This radius thus translates into the allowed distance each feed quality can stray away from its mean (and since we are dealing with the infinity norm, they can all stray independently of each other).
+
+
+## Dependencies
+* NumPy - For various computational structures (arrays) and linear algebra operations.
+* SciPy - Primarily for computing the error function and some norms.
+* GurobiPy - For solving mixed-integer bilinear programming problems (particularly for the scenario proxy and robust proxy). Also requires an active license.
+* Pandas - First and foremost for loading and saving the result tables as .csv files
+* Time - For timing the methods. This forms part of the results table
