@@ -14,6 +14,10 @@ Adjustable parameters:
 * Robust approach:
   * Uncertainty set radius - The "radius" used for the uncertainty set. The model is currently only set up for an uncertainty set based on the infinity norm of the vector of uncertain feed qualities. This radius thus translates into the allowed distance each feed quality can stray away from its mean (and since we are dealing with the infinity norm, they can all stray independently of each other).
 
+## Future work
+* It would be nice to more dynamically be able to specify problem models, and for instance not have to define it once in a (each of the) proxy model(s) and also in the ss_evaluator(), but rather define one problem once, and automatically adjust the optimisation formulations to the different model types
+* The robust uncertainty model is a bit restrictive and it would be nice to look at uncertainty sets that are, for instance, induced by a 2 norm or a 1 norm. Also uncertainty budgets could be interesting.
+* The stochastic programming approach would greatly benefit from some refined convex relaxation schemes and also bounds tightening, especially for the standard deviations of compositions as other variables get restricted in the spatial branch and bound procedure
 
 ## Dependencies
 * NumPy - For various computational structures (arrays) and linear algebra operations.
