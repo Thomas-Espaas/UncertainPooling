@@ -34,11 +34,19 @@ class UncertainModel:
         self.problem_status = 'unsolved'
 
     def solve_problem(self):
+        """
+        Since the structure of the problem solving method depends quite strongly on the model used, this is simply a
+        placeholder, meant to be overridden in the child classes.
+        """
         pass
 
     def ss_evaluator(self):
+        """
+        Method to calculate the objective metric of the stochastic model respecting the true nature of uncertainty.
+        It uses the value for the variables determined through the optimization of a proxy model.
+        """
         if self.problem_status == 'unsolved':
-            print('Problem has not been sovled using an optimisation under uncertainty method yet.')
+            print('Problem has not been solved using an optimisation under uncertainty method yet.')
             print('Optimise the problem using one of the available methods first.')
 
             exit()
@@ -47,6 +55,8 @@ class UncertainModel:
             feed_price = [6, 16, 10]
             product_price = [9, 15]
             product_quality = [2.5, 1.5]
+
+            ## Load problem stats and data that will already have been set or obtained through optimisation
 
             feed_mus = self.feed_mus
             feed_stds = [self.std, self.std, self.std]
@@ -60,6 +70,10 @@ class UncertainModel:
                           proxy_solution['pool_flows[2]'], proxy_solution['pool_flows[3]']
                           ]
             product_flows = [proxy_solution['product_flows[0]'], proxy_solution['product_flows[1]']]
+
+            ## The below calculates the compositions and standard deviations of compositions throughout the Haverly
+            ## network. Some handling must be done in case flows into a pool or product is zero (to avoid division
+            ## by zero errors)
 
             pool_mus = [0, 0]
             pool_stds = [0, 0]
@@ -100,6 +114,9 @@ class UncertainModel:
                 product_mus[1] = 0
                 product_stds[1] = 1
 
+            ## Probabilities of the two products satisfying their quality constraints can be calculated using the
+            ## cumulative distribution function
+
             probabilities = [0, 0]
 
             probabilities[0] = norm_cdf(self.product_qualities[0], product_mus[0], product_stds[0])
@@ -111,6 +128,8 @@ class UncertainModel:
             feed_price = [6, 16, 10]
             product_price = [9, 15]
             product_quality = [2.5, 1.5]
+
+            ## Load problem stats and data that will already have been set or obtained through optimisation
 
             feed_mus = self.feed_mus
             feed_stds = [self.std, self.std, self.std]
@@ -124,6 +143,10 @@ class UncertainModel:
                           proxy_solution['pool_flows[2]'], proxy_solution['pool_flows[3]']
                           ]
             product_flows = [proxy_solution['product_flows[0]'], proxy_solution['product_flows[1]']]
+
+            ## The below calculates the compositions and standard deviations of compositions throughout the Haverly
+            ## network. Some handling must be done in case flows into a pool or product is zero (to avoid division
+            ## by zero errors)
 
             pool_mus = [0, 0]
             pool_stds = [0, 0]
@@ -163,6 +186,9 @@ class UncertainModel:
             except:
                 product_mus[1] = 0
                 product_stds[1] = 1
+
+            ## Probabilities of the two products satisfying their quality constraints can be calculated using the
+            ## cumulative distribution function
 
             probabilities = [0, 0]
 
@@ -176,6 +202,8 @@ class UncertainModel:
             product_price = [9, 15]
             product_quality = [2.5, 1.5]
 
+            ## Load problem stats and data that will already have been set or obtained through optimisation
+
             feed_mus = self.feed_mus
             feed_stds = [self.std, self.std, self.std]
 
@@ -188,6 +216,10 @@ class UncertainModel:
                           proxy_solution['pool_flows[2]'], proxy_solution['pool_flows[3]']
                           ]
             product_flows = [proxy_solution['product_flows[0]'], proxy_solution['product_flows[1]']]
+
+            ## The below calculates the compositions and standard deviations of compositions throughout the Haverly
+            ## network. Some handling must be done in case flows into a pool or product is zero (to avoid division
+            ## by zero errors)
 
             pool_mus = [0, 0]
             pool_stds = [0, 0]
@@ -227,6 +259,9 @@ class UncertainModel:
             except:
                 product_mus[1] = 0
                 product_stds[1] = 1
+
+            ## Probabilities of the two products satisfying their quality constraints can be calculated using the
+            ## cumulative distribution function
 
             probabilities = [0, 0]
 
@@ -341,6 +376,10 @@ class UncertainModel:
             pass
 
     def save_results(self):
+        """
+        Since the structure of the resulting saving method depends quite strongly on the model used, this is simply a
+        placeholder, meant to be overridden in the child classes.
+        """
         pass
 
 
@@ -355,18 +394,24 @@ class ScenarioPooling(UncertainModel):
         self.model_class = 'scenario'
         self.problem_name = problem_name
         self.std = std
-        self.local_solver_tol = 1.0e-8
+        self.local_solver_tol = 1.0e-8  # Tolerance for Gurobi
         self.iteration_counter = 0
         self.problem_status = 'unsolved'
         if kwargs.get('scen_gen_strat', 'Lee') == 'Lee':
-            self.scenario_generation_strategy = 'Lee'
+            self.scenario_generation_strategy = 'Lee' # Scenario generation strategy outlined in a 2010 paper by Lee
         elif kwargs.get('scen_gen_strat', None) == 'Basic':
             self.scenario_generation_strategy = 'Basic'
             self.scenario_generation_strategy_po = kwargs.get('scen_gen_strat_po', 0.3)
         self.num_scen = 3  ## Number of scenarios per uncertain variable
-        self.gurobi_time_limit = 500 ## seconds
+        self.gurobi_time_limit = 500 ## Time limit for Gurobi in seconds
 
     def solve_problem(self):
+        """
+        Method to solve the scenario proxy model. The model is also constructed in here. The main philosophy si to
+        identify problem variables that are the same across scenarios and others that vary. For the ones that vary
+        one "sub-variable" has to be defined per scenario and the relevant constraints also have to be defined per
+        scenario.
+        """
 
         if self.problem_name == 'Haverly_1':
             m = gp.Model('Haverly_1_discrete')
@@ -1099,8 +1144,8 @@ class ScenarioPooling(UncertainModel):
         m.params.TimeLimit = self.gurobi_time_limit
         m.optimize()
 
-        self.scenario_incumbent = m.objVal
-        self.scenario_bound = m.ObjBound
+        self.scenario_incumbent = m.objVal # The current best obtained solution
+        self.scenario_bound = m.ObjBound # The best lower bound achieved. May differ from the best obtained solution.
         self.runTime = m.Runtime
         self.problem_status = 'solved'
 
@@ -1113,6 +1158,11 @@ class ScenarioPooling(UncertainModel):
         self.proxy_solution['x'] = solution_dict
 
     def scenario_generation(self):
+        """
+        A method to construct scenarios used for the scenario proxy model. Two main options are already included:
+        One by Lee(2010) and a basic one matching the variance of the discrete model with the variance of the true
+        underlying random variable
+        """
         if self.scenario_generation_strategy == 'Lee':
             if self.problem_name == 'Haverly_1':
                 self.var1_scenarios = [
@@ -1415,10 +1465,14 @@ class ScenarioPooling(UncertainModel):
                 pass
 
     def save_results(self):
+        """
+        A method to save the results to a csv result file. First the method checks if a results file for the appropriate
+         problem/solution approach exists, and if it does it pull it and only updates the field for the relevant
+         combination of true uncertainty variance and scenario generation choices. It then saves the file. If no
+         appropriate file exists initially, it creates one from scratch.
+        """
         try:
-            #dataframe = pd.read_csv('UncertainPoolingResults/' + self.problem_name + '/scenario',
-            #                        index_col=['std', 'p_o'])
-            dataframe = pd.read_csv(self.problem_name + '_scenario_results.csv', index_col = ['std', 'p_o'])
+            dataframe = pd.read_csv(self.problem_name + '_scenario_results.csv', index_col=['std', 'p_o'])
         except:
             index = pd.MultiIndex(levels=[[], []], codes=[[], []], names=[u'std', u'p_o'])
             dataframe = pd.DataFrame(index=index, columns=['delta_x', 'f_hat', 'f', 'f_LB', 'CPU'])
@@ -1443,16 +1497,21 @@ class RobustPooling(UncertainModel):
         self.model_class = 'robust'
         self.problem_name = problem_name
         self.std = std
-        self.local_solver_tol = 1.0e-8
+        self.local_solver_tol = 1.0e-8 # Gurobi tolerance
         self.iteration_counter = 0
         self.problem_status = 'unsolved'
-        self.robust_radius = kwargs.get('r', 0.1)
-        self.gurobi_time_limit = 500 ## seconds
+        self.robust_radius = kwargs.get('r', 0.1) # Radius of the uncertainty set. Can be given as a parameter
+        self.gurobi_time_limit = 500 ## Gurobi time limit in seconds
 
     def solve_problem(self):
-
+        """
+        Method to solve the robust proxy model. The model is also constructed in here. The main philosophy is to
+        recognise that with an infinity norm induced uncertainty set, the worst-case is realised when all uncertain
+        feed qualities are at their (mean + uncertainty radius). The nominal value for the feed qualities can then be
+        updated accordingly, and the model be solved as a standard pooling problem.
+        """
         if self.problem_name == 'Haverly_1':
-            m = gp.Model('Foulds_2_discrete')
+            m = gp.Model('Haverly_1_discrete')
             self.feed_mus = [3, 1, 2]
             self.robust_feed_mus = [feed_mu + self.robust_radius for feed_mu in self.feed_mus]
             self.product_qualities = [2.5, 1.5]
@@ -1509,7 +1568,7 @@ class RobustPooling(UncertainModel):
             m.addConstr(x_pool_flows[1] * x_pool_compositions[0] + x_pool_flows[3] *
                         x_pool_compositions[1] <= x_product_flows[1] * product_quality[1])
         elif self.problem_name == 'Haverly_2':
-            m = gp.Model('Foulds_2_discrete')
+            m = gp.Model('Haverly_2_discrete')
             self.feed_mus = [3, 1, 2]
             self.robust_feed_mus = [feed_mu + self.robust_radius for feed_mu in self.feed_mus]
             self.product_qualities = [2.5, 1.5]
@@ -1565,7 +1624,7 @@ class RobustPooling(UncertainModel):
             m.addConstr(x_pool_flows[1] * x_pool_compositions[0] + x_pool_flows[3] *
                         x_pool_compositions[1] <= x_product_flows[1] * product_quality[1])
         elif self.problem_name == 'Haverly_3':
-            m = gp.Model('Foulds_2_discrete')
+            m = gp.Model('Haverly_3_discrete')
             self.feed_mus = [3, 1, 2]
             self.robust_feed_mus = [feed_mu + self.robust_radius for feed_mu in self.feed_mus]
             self.product_qualities = [2.5, 1.5]
@@ -1708,11 +1767,11 @@ class RobustPooling(UncertainModel):
             pass
 
         m.params.TimeLimit = self.gurobi_time_limit
-        m.params.NonConvex = 2
+        m.params.NonConvex = 2 ## Required parameter update for Gurobi to solve nonconvex bilinear programming problems
         m.optimize()
 
-        self.robust_incumbent = m.objVal
-        self.robust_bound = m.ObjBound
+        self.robust_incumbent = m.objVal # Best obtained solution
+        self.robust_bound = m.ObjBound # Best remaining bound. If it is equal to the incumbent, global optimisation is guaranteed
         self.runTime = m.Runtime
         self.problem_status = 'solved'
 
@@ -1725,6 +1784,12 @@ class RobustPooling(UncertainModel):
         self.proxy_solution['x'] = solution_dict
 
     def save_results(self):
+        """
+        A method to save the results to a csv result file. First the method checks if a results file for the appropriate
+         problem/solution approach exists, and if it does it pull it and only updates the field for the relevant
+         combination of true uncertainty variance and scenario generation choices. It then saves the file. If no
+         appropriate file exists initially, it creates one from scratch.
+        """
         try:
             dataframe = pd.read_csv(self.problem_name + '_robust_results.csv', index_col=['std', 'r'])
         except:
@@ -1826,23 +1891,6 @@ class StochPooling(UncertainModel):
                                                self.std, self.std,
                                                1, 1]))
         elif self.problem_name == 'Foulds_2':
-            """self.lower_bounds.append(np.array([0, 0, 0, 0, 0, 0,
-                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                      0, 0, 0, 0,
-                                      1, 2, 1.5, 2.5,
-                                      np.sqrt(0.5 * self.std ** 2), self.std, np.sqrt(0.5 * self.std ** 2), self.std,
-                                      1, 1, 1, 1,
-                                      np.sqrt(0.25 * 0.5 * self.std ** 2), np.sqrt(0.25 * 0.5 * self.std ** 2), np.sqrt(0.25 * 0.5 * self.std ** 2), np.sqrt(0.25 * 0.5 * self.std ** 2),
-                                      0, 0, 0, 0]))
-            self.upper_bounds.append(np.array([600, 600, 600, 600, 600, 600,
-                                      100, 200, 100, 200, 100, 200, 100, 200, 100, 200, 100, 200, 100, 200, 100, 200,
-                                      100, 200, 100, 200,
-                                      3, 2, 3.5, 2.5,
-                                      self.std, self.std, self.std, self.std,
-                                      3.5, 3.5, 3.5, 3.5,
-                                      self.std, self.std, self.std, self.std,
-                                      1, 1, 1, 1]))"""
-
             self.lower_bounds.append(np.array([0, 0, 0, 0, 0, 0,
                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                                0, 0, 0, 0,
@@ -1862,27 +1910,16 @@ class StochPooling(UncertainModel):
                                                2.5, 1.5, 3.0, 2.0,
                                                self.std, self.std, self.std, self.std,
                                                1, 1, 1, 1]))
-
-            """self.lower_bounds.append(np.array([0, 200, 0, 50, 0, 350,
-                                               0, 133.33, 0, 66.66, 0, 0, 0, 0, 0, 0, 50, 0, 100, 66.66, 50, 133.33,
-                                               100, 200, 100, 200,
-                                               1, 2.0, 3.5, 2.5,
-                                               np.sqrt(0.5 * self.std ** 2), self.std, np.sqrt(0.5 * self.std ** 2),
-                                               self.std,
-                                               1, 1, 1, 1,
-                                               np.sqrt(0.25 * 0.5 * self.std ** 2), np.sqrt(0.25 * 0.5 * self.std ** 2),
-                                               np.sqrt(0.25 * 0.5 * self.std ** 2), np.sqrt(0.25 * 0.5 * self.std ** 2),
-                                               0, 0, 0, 0]))
-            self.upper_bounds.append(np.array([0, 200, 0, 50, 0, 350,
-                                               0, 133.34, 0, 66.67, 0, 0, 0, 0, 0, 0, 50, 0, 100, 66.67, 50, 133.34,
-                                               100, 200, 100, 200,
-                                               1.0, 2.0, 3.5, 2.5,
-                                               self.std, self.std, self.std, self.std,
-                                               3.5, 3.5, 3.5, 3.5,
-                                               self.std, self.std, self.std, self.std,
-                                               1, 1, 1, 1]))"""
+        elif self.problem_name == 'Segarwak':
+            pass
 
     def solve_problem(self):
+        """
+        Method to solve the stochastic programming problem. The model is also constructed in here. The main philosophy
+        is to construct the problem exactly as we best understand it using continuous (normally distributed) random
+        variables. This means we are trying to optimise the model we are planning to validate the solution against,
+        so successful optimisation here guarantees the best achievable solution for our wider problem.
+        """
         start = time.time()
 
         problem_solved = False
@@ -2241,6 +2278,10 @@ class StochPooling(UncertainModel):
             pass
 
     def lower_bounding(self, node):
+        """
+        Method to solve a lower bounding problem for the stochastic programming approach. This creates a convex
+        relaxation of the nonconvex problem and solves this to obtain a valid lower bound on the region of interest
+        """
         if self.problem_name == 'Haverly_1' or self.problem_name == 'Haverly_2':
             feed_flows = casadi.SX.sym('feed_flows', 3)
             pool_flows = casadi.SX.sym('pool_flows', 4)
@@ -2992,6 +3033,10 @@ class StochPooling(UncertainModel):
             return [False, np.inf]
 
     def upper_bounding(self, node):
+        """
+        Method to solve an upper bounding problem for the stochastic programming approach. This locally optimises the
+        nonconvex problem to obtain a feasible solution that can eb used for spatial branch and bound pruning.
+        """
         if self.problem_name == 'Haverly_1' or self.problem_name == 'Haverly_2':
             feed_flows = casadi.SX.sym('feed_flows', 3)
             pool_flows = casadi.SX.sym('pool_flows', 4)
@@ -3371,7 +3416,12 @@ class StochPooling(UncertainModel):
             return [False, np.inf]
 
     def Get_erf_LB(self, product_quality=2.5, mu_bounds=[1.0, 3.0], sigma_bounds=[0.02, 0.2]):
-        print(mu_bounds, sigma_bounds)
+        """
+        Method to construct a convex relaxation of the error function as a wider goal of relaxing the cumulative
+        distribution function of a normally distributed random variable. The mean and variance of the distribution
+        are essentially the variables here and the measure of the interval they are defined over determines the
+        tightness of the relaxation.
+        """
         X, Y = np.meshgrid(np.linspace(mu_bounds[0], mu_bounds[1]), np.linspace(sigma_bounds[0], sigma_bounds[1]))
 
         Z = -0.5 * (1 + scp_erf((product_quality - mu_bounds[0]) / (Y * np.sqrt(2))))
@@ -3392,6 +3442,11 @@ class StochPooling(UncertainModel):
         return scalar_underestimate, [f_lb, slope]
 
     def ss_evaluator(self):
+        """
+        Since the approach already works directly with our validation model, this does not need to be reconstructed and
+        the "stochastic solution" is simply given as the solution we obtained in our optimisation.
+        :return:
+        """
         if self.problem_status == 'unsolved':
             print('Problem has not been sovled using an optimisation under uncertainty method yet.')
             print('Optimise the problem using one of the available methods first.')
@@ -3401,7 +3456,12 @@ class StochPooling(UncertainModel):
             self.stochastic_solution = self.continuous_solution
 
     def save_results(self):
-
+        """
+        A method to save the results to a csv result file. First the method checks if a results file for the appropriate
+         problem/solution approach exists, and if it does it pull it and only updates the field for the relevant
+         combination of true uncertainty variance and scenario generation choices. It then saves the file. If no
+         appropriate file exists initially, it creates one from scratch.
+        """
         try:
             dataframe = pd.read_csv(self.problem_name + '_stochastic_programming_results.csv', index_col=['std'])
         except:
