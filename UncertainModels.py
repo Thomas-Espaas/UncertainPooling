@@ -275,6 +275,8 @@ class UncertainModel:
             product_price = [9, 15, 6, 12]
             product_quality = [2.5, 1.5, 3, 2]
 
+            ## Load problem stats and data that will already have been set or obtained through optimisation
+
             feed_mus = self.feed_mus
             feed_stds = [self.std, self.std, self.std, self.std, self.std, self.std]
 
@@ -295,6 +297,10 @@ class UncertainModel:
                           ]
             product_flows = [proxy_solution['product_flows[0]'], proxy_solution['product_flows[1]'],
                              proxy_solution['product_flows[2]'], proxy_solution['product_flows[3]']]
+
+            ## The below calculates the compositions and standard deviations of compositions throughout the Foulds 2
+            ## network. Some handling must be done in case flows into a pool or product is zero (to avoid division
+            ## by zero errors)
 
             pool_mus = [0, 0, 0, 0]
             pool_stds = [0, 0, 0, 0]
@@ -362,6 +368,8 @@ class UncertainModel:
                 product_mus[3] = 0
                 product_stds[3] = 1
 
+            ## Probabilities of the two products satisfying their quality constraints can be calculated using the
+            ## cumulative distribution function
 
             probabilities = [0, 0, 0, 0]
 
@@ -413,19 +421,25 @@ class ScenarioPooling(UncertainModel):
         scenario.
         """
 
+        # Select the problem based on the instance problem name
+
         if self.problem_name == 'Haverly_1':
             m = gp.Model('Haverly_1_discrete')
             self.feed_mus = [3, 1, 2]
             self.product_qualities = [2.5, 1.5]
 
-            self.scenario_generation()
+            self.scenario_generation()  # Generate scenarios using the specified scenario generation method
+
+            # Specify the relevant problem parameters
 
             feed_price = [6, 16, 10]
 
             product_price = [9, 15]
-            product_quality = [2.5, 1.5]
+            product_quality = self.product_qualities  # Cleans up notation a bit further down.
 
             product_demand = [100, 200]
+
+            # Set up the gurobi variables
 
             x_feed_flows = m.addVars(3, name='feed_flows', lb=0, ub=sum(product_demand))
             x_pool_flows = m.addVars(4, name='pool_flows', lb=0, ub=product_demand + product_demand)
@@ -434,12 +448,17 @@ class ScenarioPooling(UncertainModel):
                                    m.addVars(self.num_scen, name='pool2_comps')]
 
             x_product_compositions = m.addVars(2, self.num_scen, self.num_scen, self.num_scen, name='product_comps')
+            # x_y are binary variables denoting whether the product quality constraints are satisfied in different
+            # scenarios.
             x_y = m.addVars(2, self.num_scen, self.num_scen, self.num_scen, vtype=GRB.BINARY)
-
+            # x_p are variables denoting the probability that a particular product stream satisfies the quality
+            # constraints.
             x_p = m.addVars(2, lb=0, ub=1)
 
             m.update()
 
+            # Set lower and upper bounds on the pool and  product compositions in different scenarios according to
+            # basic interval arithmetics.
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -491,6 +510,9 @@ class ScenarioPooling(UncertainModel):
 
             ## Product quality balance
 
+            # In contrast to the standard pooling problem, where the product quality simply restrict the product
+            # quality, in the scenario approach we apply logical constraints to set the binary x_y variables to 1 if the
+            # original constraint is satisfied and 0 otherwise
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -508,6 +530,8 @@ class ScenarioPooling(UncertainModel):
                                         product_quality[1])
             prob_sums = [0, 0]
 
+            # Set up constraints for the probabilities of quality satisfaction by summing the binary satisfaction
+            # variables, weighted by the probabilities of each scenario.
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -520,14 +544,18 @@ class ScenarioPooling(UncertainModel):
             self.feed_mus = [3, 1, 2]
             self.product_qualities = [2.5, 1.5]
 
-            self.scenario_generation()
+            self.scenario_generation()  # Generate scenarios using the specified scenario generation method
+
+            # Specify the relevant problem parameters
 
             feed_price = [6, 16, 10]
 
             product_price = [9, 15]
-            product_quality = [2.5, 1.5]
+            product_quality = self.product_qualities  # Cleans up notation a bit further down
 
             product_demand = [600, 200]
+
+            # Set up the gurobi variables
 
             x_feed_flows = m.addVars(3, name='feed_flows', lb=0, ub=sum(product_demand))
             x_pool_flows = m.addVars(4, name='pool_flows', lb=0, ub=product_demand + product_demand)
@@ -536,12 +564,19 @@ class ScenarioPooling(UncertainModel):
                                    m.addVars(self.num_scen, name='pool2_comps')]
 
             x_product_compositions = m.addVars(2, self.num_scen, self.num_scen, self.num_scen, name='product_comps')
+
+            # x_y are binary variables denoting whether the product quality constraints are satisfied in different
+            # scenarios.
             x_y = m.addVars(2, self.num_scen, self.num_scen, self.num_scen, vtype=GRB.BINARY)
 
+            # x_p are variables denoting the probability that a particular product stream satisfies the quality
+            # constraints.
             x_p = m.addVars(2, lb=0, ub=1)
 
             m.update()
 
+            # Set lower and upper bounds on the pool and  product compositions in different scenarios according to
+            # basic interval arithmetics.
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -566,17 +601,15 @@ class ScenarioPooling(UncertainModel):
                 x_pool_compositions[1][j3].UB = \
                     self.var3_scenarios[j3]
 
-            ## Objective function
-
+            # Objective function
             m.setObjective(gp.quicksum([x_feed_flows[i] * feed_price[i] for i in range(3)]) -
                            gp.quicksum([x_p[j] * x_product_flows[j] * product_price[j] for j in range(2)]))
 
-            ## Pool mass balance
-
+            # Pool mass balance
             m.addConstr(x_feed_flows[0] + x_feed_flows[1] == gp.quicksum([x_pool_flows[i] for i in range(2)]))
             m.addConstr(x_feed_flows[2] == gp.quicksum([x_pool_flows[i] for i in range(2, 4)]))
 
-            ## Pool component balance
+            # Pool component balance
             for j1 in range(self.num_scen):
                 for j2 in range(self.num_scen):
                     m.addConstr(x_feed_flows[0] * self.var1_scenarios[j1] + x_feed_flows[1] * self.var2_scenarios[j2] ==
@@ -585,14 +618,15 @@ class ScenarioPooling(UncertainModel):
             for j3 in range(self.num_scen):
                 m.addConstr(self.var3_scenarios[j3] == x_pool_compositions[1][j3])
 
-            ## Product mass balance
-
+            # Product mass balance
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 0] for i in range(2)]) == x_product_flows[0])
-
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 1] for i in range(2)]) == x_product_flows[1])
 
-            ## Product quality balance
+            # Product quality balance
 
+            # In contrast to the standard pooling problem, where the product quality simply restrict the product
+            # quality, in the scenario approach we apply logical constraints to set the binary x_y variables to 1 if the
+            # original constraint is satisfied and 0 otherwise
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -610,6 +644,8 @@ class ScenarioPooling(UncertainModel):
                                         product_quality[1])
             prob_sums = [0, 0]
 
+            # Set up constraints for the probabilities of quality satisfaction by summing the binary satisfaction
+            # variables, weighted by the probabilities of each scenario.
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -622,15 +658,17 @@ class ScenarioPooling(UncertainModel):
             self.feed_mus = [3, 1, 2]
             self.product_qualities = [2.5, 1.5]
 
-            self.scenario_generation()
+            self.scenario_generation()  # Create the scenarios (values and probabilities) for the scenario model
 
+            # Specify the relevant problem parameters
             feed_price = [6, 13, 10]
 
             product_price = [9, 15]
-            product_quality = [2.5, 1.5]
+            product_quality = self.product_qualities  # Cleans up notation a bit further down
 
             product_demand = [100, 200]
 
+            # Set up the gurobi variables
             x_feed_flows = m.addVars(3, name='feed_flows', lb=0, ub=sum(product_demand))
             x_pool_flows = m.addVars(4, name='pool_flows', lb=0, ub=product_demand + product_demand)
             x_product_flows = m.addVars(2, name='product_flows', lb=0, ub=product_demand)
@@ -638,12 +676,19 @@ class ScenarioPooling(UncertainModel):
                                    m.addVars(self.num_scen, name='pool2_comps')]
 
             x_product_compositions = m.addVars(2, self.num_scen, self.num_scen, self.num_scen, name='product_comps')
+
+            # x_y are binary variables denoting whether the product quality constraints are satisfied in different
+            # scenarios.
             x_y = m.addVars(2, self.num_scen, self.num_scen, self.num_scen, vtype=GRB.BINARY)
 
+            # x_p are variables denoting the probability that a particular product stream satisfies the quality
+            # constraints.
             x_p = m.addVars(2, lb=0, ub=1)
 
             m.update()
 
+            # Set lower and upper bounds on the pool and  product compositions in different scenarios according to
+            # basic interval arithmetics.
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -668,17 +713,17 @@ class ScenarioPooling(UncertainModel):
                 x_pool_compositions[1][j3].UB = \
                     self.var3_scenarios[j3]
 
-            ## Objective function
+            # Objective function
 
             m.setObjective(gp.quicksum([x_feed_flows[i] * feed_price[i] for i in range(3)]) -
                            gp.quicksum([x_p[j] * x_product_flows[j] * product_price[j] for j in range(2)]))
 
-            ## Pool mass balance
+            # Pool mass balance
 
             m.addConstr(x_feed_flows[0] + x_feed_flows[1] == gp.quicksum([x_pool_flows[i] for i in range(2)]))
             m.addConstr(x_feed_flows[2] == gp.quicksum([x_pool_flows[i] for i in range(2, 4)]))
 
-            ## Pool component balance
+            # Pool component balance
             for j1 in range(self.num_scen):
                 for j2 in range(self.num_scen):
                     m.addConstr(x_feed_flows[0] * self.var1_scenarios[j1] + x_feed_flows[1] * self.var2_scenarios[j2] ==
@@ -687,14 +732,16 @@ class ScenarioPooling(UncertainModel):
             for j3 in range(self.num_scen):
                 m.addConstr(self.var3_scenarios[j3] == x_pool_compositions[1][j3])
 
-            ## Product mass balance
+            # Product mass balance
 
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 0] for i in range(2)]) == x_product_flows[0])
-
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 1] for i in range(2)]) == x_product_flows[1])
 
-            ## Product quality balance
+            # Product quality balance
 
+            # In contrast to the standard pooling problem, where the product quality simply restrict the product
+            # quality, in the scenario approach we apply logical constraints to set the binary x_y variables to 1 if the
+            # original constraint is satisfied and 0 otherwise
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -712,6 +759,9 @@ class ScenarioPooling(UncertainModel):
                                         product_quality[1])
             prob_sums = [0, 0]
 
+            # In contrast to the standard pooling problem, where the product quality simply restrict the product
+            # quality, in the scenario approach we apply logical constraints to set the binary x_y variables to 1 if the
+            # original constraint is satisfied and 0 otherwise
             for i in range(2):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -724,15 +774,17 @@ class ScenarioPooling(UncertainModel):
             self.feed_mus = [3, 1, 2, 3.5, 1.5, 2.5]
             self.product_qualities = [2.5, 1.5, 3, 2]
 
-            self.scenario_generation()
+            self.scenario_generation()  # Create the scenarios (values and probabilities) for the scenario model
 
+            # Specify the relevant model parameters
             feed_price = [6, 16, 10, 3, 13, 7]
 
             product_price = [9, 15, 6, 12]
-            product_quality = [2.5, 1.5, 3, 2]
+            product_quality = self.product_qualities  # Cleans up notation further down
 
             product_demand = [100, 200, 100, 200]
 
+            # Set up the gurobi variables
             x_feed_flows = m.addVars(6, name='feed_flows', lb=0, ub=sum(product_demand))
             x_pool_flows = m.addVars(16, name='pool_flows', lb=0,
                                      ub=product_demand + product_demand + product_demand + product_demand)
@@ -744,13 +796,20 @@ class ScenarioPooling(UncertainModel):
 
             x_product_compositions = m.addVars(4, self.num_scen, self.num_scen, self.num_scen, self.num_scen,
                                                self.num_scen, self.num_scen, name='product_comps')
+
+            # x_y are binary variables denoting whether the product quality constraints are satisfied in different
+            # scenarios.
             x_y = m.addVars(4, self.num_scen, self.num_scen, self.num_scen, self.num_scen, self.num_scen, self.num_scen,
                             vtype=GRB.BINARY)
 
+            # x_p are variables denoting the probability that a particular product stream satisfies the quality
+            # constraints.
             x_p = m.addVars(4, lb=0, ub=1)
 
             m.update()
 
+            # Set lower and upper bounds on the pool and  product compositions in different scenarios according to
+            # basic interval arithmetics.
             for i in range(4):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -881,6 +940,9 @@ class ScenarioPooling(UncertainModel):
                                                     product_quality[3])
             prob_sums = [0, 0, 0, 0]
 
+            # In contrast to the standard pooling problem, where the product quality simply restrict the product
+            # quality, in the scenario approach we apply logical constraints to set the binary x_y variables to 1 if the
+            # original constraint is satisfied and 0 otherwise
             for i in range(4):
                 for j1 in range(self.num_scen):
                     for j2 in range(self.num_scen):
@@ -888,12 +950,15 @@ class ScenarioPooling(UncertainModel):
                             for j4 in range(self.num_scen):
                                 for j5 in range(self.num_scen):
                                     for j6 in range(self.num_scen):
-                                        prob_sums[i] += (self.var1_scenario_probs[j1] * self.var2_scenario_probs[j2] *
+                                        prob_sums[i] += ((self.var1_scenario_probs[j1] * self.var2_scenario_probs[j2] *
                                                          self.var3_scenario_probs[j3] * self.var4_scenario_probs[j4] *
-                                                         self.var5_scenario_probs[j5] * self.var6_scenario_probs[j6]) * \
-                                                        x_y[i, j1, j2, j3, j4, j5, j6]
+                                                         self.var5_scenario_probs[j5] * self.var6_scenario_probs[j6]) *
+                                                         x_y[i, j1, j2, j3, j4, j5, j6])
                 m.addConstr(x_p[i] == prob_sums[i])
         elif self.problem_name == 'Segarwak':
+            """
+            Based on the literature model of the gas extraction and distribution facilities in Segarwak
+            """
             m = gp.Model('Segarwak')
             self.feed_mus = [0.72, 0.88, 0.27, 9.23, 3.41, 0.68, 1.64, 1.45, 8.85, 1.59, 1.59, 2.43, 0.95, 2.30, 3.34, 3.83, 3.83]
             self.product_qualities = [2.8, 2.8, 2.8]
