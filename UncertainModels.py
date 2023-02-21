@@ -1591,11 +1591,11 @@ class RobustPooling(UncertainModel):
         self.model_class = 'robust'
         self.problem_name = problem_name
         self.std = std
-        self.local_solver_tol = 1.0e-8 # Gurobi tolerance
+        self.local_solver_tol = 1.0e-8  # Gurobi tolerance
         self.iteration_counter = 0
         self.problem_status = 'unsolved'
-        self.robust_radius = kwargs.get('r', 0.1) # Radius of the uncertainty set. Can be given as a parameter
-        self.gurobi_time_limit = 500 ## Gurobi time limit in seconds
+        self.robust_radius = kwargs.get('r', 0.1)  # Radius of the uncertainty set. Can be given as a parameter
+        self.gurobi_time_limit = 500  # Gurobi time limit in seconds
 
     def solve_problem(self):
         """
@@ -1605,18 +1605,24 @@ class RobustPooling(UncertainModel):
         updated accordingly, and the model be solved as a standard pooling problem.
         """
         if self.problem_name == 'Haverly_1':
+            # Initialise the Gurobi model
             m = gp.Model('Haverly_1_discrete')
+
+            # Set the model parameters
             self.feed_mus = [3, 1, 2]
+            # Because of the uncertainty set used, the robust problem is equivalent to changing all the feed
+            # compositions to their upper bounds in the uncertainty set
             self.robust_feed_mus = [feed_mu + self.robust_radius for feed_mu in self.feed_mus]
             self.product_qualities = [2.5, 1.5]
 
             feed_price = [6, 16, 10]
 
             product_price = [9, 15]
-            product_quality = [2.5, 1.5] ## Use class variable?
+            product_quality = self.product_qualities
 
             product_demand = [100, 200]
 
+            # Define the Gurobi variables used in the problem
             x_feed_flows = m.addVars(3, name='feed_flows', lb=0, ub=sum(product_demand))
             x_pool_flows = m.addVars(4, name='pool_flows', lb=0,
                                      ub=product_demand + product_demand)
@@ -1625,6 +1631,7 @@ class RobustPooling(UncertainModel):
 
             m.update()
 
+            # Update the pool compositions bounds according to basic interval arithmetics
             x_pool_compositions[0].LB = min(self.robust_feed_mus[0], self.robust_feed_mus[1])
             x_pool_compositions[0].UB = max(self.robust_feed_mus[0], self.robust_feed_mus[1])
 
@@ -1632,48 +1639,50 @@ class RobustPooling(UncertainModel):
             x_pool_compositions[1].UB = self.robust_feed_mus[2]
 
             m.update()
-            ## Objective function
 
+            # Objective function
             m.setObjective(gp.quicksum([x_feed_flows[i] * feed_price[i] for i in range(3)]) -
                            gp.quicksum([x_product_flows[j] * product_price[j] for j in range(2)]))
 
-            ## Pool mass balance
-
+            # Pool mass balance
             m.addConstr(x_feed_flows[0] + x_feed_flows[1] == gp.quicksum([x_pool_flows[i] for i in range(2)]))
             m.addConstr(x_feed_flows[2] == gp.quicksum([x_pool_flows[i] for i in range(2, 4)]))
 
-            ## Pool component balance
+            # Pool component balance
             m.addConstr(x_feed_flows[0] * self.robust_feed_mus[0] + x_feed_flows[1] * self.robust_feed_mus[1] ==
                         gp.quicksum([x_pool_flows[i] * x_pool_compositions[0] for i in range(2)]))
 
             m.addConstr(self.robust_feed_mus[2] == x_pool_compositions[1])
 
-            ## Product mass balance
-
+            # Product mass balance
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 0] for i in range(2)]) == x_product_flows[0])
 
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 1] for i in range(2)]) == x_product_flows[1])
 
 
-            ## Product quality balance
-
+            # Product quality balance
             m.addConstr(x_pool_flows[0] * x_pool_compositions[0] + x_pool_flows[2] *
                         x_pool_compositions[1] <= x_product_flows[0] * product_quality[0])
             m.addConstr(x_pool_flows[1] * x_pool_compositions[0] + x_pool_flows[3] *
                         x_pool_compositions[1] <= x_product_flows[1] * product_quality[1])
         elif self.problem_name == 'Haverly_2':
+            # Initialise the Gurobi model
             m = gp.Model('Haverly_2_discrete')
+            # Set the problem parameters
             self.feed_mus = [3, 1, 2]
+            # Because of the uncertainty set used, the robust problem is equivalent to changing all the feed
+            # compositions to their upper bounds in the uncertainty set
             self.robust_feed_mus = [feed_mu + self.robust_radius for feed_mu in self.feed_mus]
             self.product_qualities = [2.5, 1.5]
 
             feed_price = [6, 16, 10]
 
             product_price = [9, 15]
-            product_quality = [2.5, 1.5]  ## Use class variable?
+            product_quality = self.product_qualities
 
             product_demand = [600, 200]
 
+            # Define the Gurobi variables used in the problem
             x_feed_flows = m.addVars(3, name='feed_flows', lb=0, ub=sum(product_demand))
             x_pool_flows = m.addVars(4, name='pool_flows', lb=0,
                                      ub=product_demand + product_demand)
@@ -1682,6 +1691,7 @@ class RobustPooling(UncertainModel):
 
             m.update()
 
+            # Update the pool compositions bounds according to basic interval arithmetics
             x_pool_compositions[0].LB = min(self.robust_feed_mus[0], self.robust_feed_mus[1])
             x_pool_compositions[0].UB = max(self.robust_feed_mus[0], self.robust_feed_mus[1])
 
@@ -1689,47 +1699,50 @@ class RobustPooling(UncertainModel):
             x_pool_compositions[1].UB = self.robust_feed_mus[2]
 
             m.update()
-            ## Objective function
 
+            # Objective function
             m.setObjective(gp.quicksum([x_feed_flows[i] * feed_price[i] for i in range(3)]) -
                            gp.quicksum([x_product_flows[j] * product_price[j] for j in range(2)]))
 
-            ## Pool mass balance
-
+            # Pool mass balance
             m.addConstr(x_feed_flows[0] + x_feed_flows[1] == gp.quicksum([x_pool_flows[i] for i in range(2)]))
             m.addConstr(x_feed_flows[2] == gp.quicksum([x_pool_flows[i] for i in range(2, 4)]))
 
-            ## Pool component balance
+            # Pool component balance
             m.addConstr(x_feed_flows[0] * self.robust_feed_mus[0] + x_feed_flows[1] * self.robust_feed_mus[1] ==
                         gp.quicksum([x_pool_flows[i] * x_pool_compositions[0] for i in range(2)]))
 
             m.addConstr(self.robust_feed_mus[2] == x_pool_compositions[1])
 
-            ## Product mass balance
-
+            # Product mass balance
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 0] for i in range(2)]) == x_product_flows[0])
 
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 1] for i in range(2)]) == x_product_flows[1])
 
-            ## Product quality balance
-
+            # Product quality balance
             m.addConstr(x_pool_flows[0] * x_pool_compositions[0] + x_pool_flows[2] *
                         x_pool_compositions[1] <= x_product_flows[0] * product_quality[0])
             m.addConstr(x_pool_flows[1] * x_pool_compositions[0] + x_pool_flows[3] *
                         x_pool_compositions[1] <= x_product_flows[1] * product_quality[1])
         elif self.problem_name == 'Haverly_3':
+            # Initialise the Gurobi model
             m = gp.Model('Haverly_3_discrete')
+
+            # Set the problem parameters
             self.feed_mus = [3, 1, 2]
+            # Because of the uncertainty set used, the robust problem is equivalent to changing all the feed
+            # compositions to their upper bounds in the uncertainty set
             self.robust_feed_mus = [feed_mu + self.robust_radius for feed_mu in self.feed_mus]
             self.product_qualities = [2.5, 1.5]
 
             feed_price = [6, 13, 10]
 
             product_price = [9, 15]
-            product_quality = [2.5, 1.5]  ## Use class variable?
+            product_quality = self.product_qualities
 
             product_demand = [100, 200]
 
+            # Define the Gurobi variables used in the problem
             x_feed_flows = m.addVars(3, name='feed_flows', lb=0, ub=sum(product_demand))
             x_pool_flows = m.addVars(4, name='pool_flows', lb=0,
                                      ub=product_demand + product_demand)
@@ -1738,6 +1751,7 @@ class RobustPooling(UncertainModel):
 
             m.update()
 
+            # Update the pool compositions bounds according to basic interval arithmetics
             x_pool_compositions[0].LB = min(self.robust_feed_mus[0], self.robust_feed_mus[1])
             x_pool_compositions[0].UB = max(self.robust_feed_mus[0], self.robust_feed_mus[1])
 
@@ -1745,47 +1759,50 @@ class RobustPooling(UncertainModel):
             x_pool_compositions[1].UB = self.robust_feed_mus[2]
 
             m.update()
-            ## Objective function
 
+            # Objective function
             m.setObjective(gp.quicksum([x_feed_flows[i] * feed_price[i] for i in range(3)]) -
                            gp.quicksum([x_product_flows[j] * product_price[j] for j in range(2)]))
 
-            ## Pool mass balance
-
+            # Pool mass balance
             m.addConstr(x_feed_flows[0] + x_feed_flows[1] == gp.quicksum([x_pool_flows[i] for i in range(2)]))
             m.addConstr(x_feed_flows[2] == gp.quicksum([x_pool_flows[i] for i in range(2, 4)]))
 
-            ## Pool component balance
+            # Pool component balance
             m.addConstr(x_feed_flows[0] * self.robust_feed_mus[0] + x_feed_flows[1] * self.robust_feed_mus[1] ==
                         gp.quicksum([x_pool_flows[i] * x_pool_compositions[0] for i in range(2)]))
 
             m.addConstr(self.robust_feed_mus[2] == x_pool_compositions[1])
 
-            ## Product mass balance
-
+            # Product mass balance
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 0] for i in range(2)]) == x_product_flows[0])
 
             m.addConstr(gp.quicksum([x_pool_flows[i * 2 + 1] for i in range(2)]) == x_product_flows[1])
 
-            ## Product quality balance
-
+            # Product quality balance
             m.addConstr(x_pool_flows[0] * x_pool_compositions[0] + x_pool_flows[2] *
                         x_pool_compositions[1] <= x_product_flows[0] * product_quality[0])
             m.addConstr(x_pool_flows[1] * x_pool_compositions[0] + x_pool_flows[3] *
                         x_pool_compositions[1] <= x_product_flows[1] * product_quality[1])
         elif self.problem_name == 'Foulds_2':
+            # Initialise the Gurobi model
             m = gp.Model('Foulds_2_discrete')
+
+            # Set the problem parameters
             self.feed_mus = [3, 1, 2, 3.5, 1.5, 2.5]
+            # Because of the uncertainty set used, the robust problem is equivalent to changing all the feed
+            # compositions to their upper bounds in the uncertainty set
             self.robust_feed_mus = [feed_mu + self.robust_radius for feed_mu in self.feed_mus]
             self.product_qualities = [2.5, 1.5, 3, 2]
 
             feed_price = [6, 16, 10, 3, 13, 7]
 
             product_price = [9, 15, 6, 12]
-            product_quality = [2.5, 1.5, 3, 2] ## Use class variable?
+            product_quality = self.product_qualities
 
             product_demand = [100, 200, 100, 200]
 
+            # Define the Gurobi variables used in the problem
             x_feed_flows = m.addVars(6, name='feed_flows', lb=0, ub=sum(product_demand))
             x_pool_flows = m.addVars(16, name='pool_flows', lb=0, ub=product_demand+product_demand+product_demand+product_demand)
             x_product_flows = m.addVars(4, name='product_flows', lb=0, ub=product_demand)
@@ -1793,6 +1810,7 @@ class RobustPooling(UncertainModel):
 
             m.update()
 
+            # Update the pool compositions bounds according to basic interval arithmetics
             x_pool_compositions[0].LB = min(self.robust_feed_mus[0], self.robust_feed_mus[1])
             x_pool_compositions[0].UB = max(self.robust_feed_mus[0], self.robust_feed_mus[1])
 
@@ -1806,43 +1824,33 @@ class RobustPooling(UncertainModel):
             x_pool_compositions[3].UB = self.robust_feed_mus[5]
 
             m.update()
-            ## Objective function
 
+            # Objective function
             m.setObjective(gp.quicksum([x_feed_flows[i] * feed_price[i] for i in range(6)]) -
                            gp.quicksum([x_product_flows[j] * product_price[j] for j in range(4)]))
 
 
-            ## Pool mass balance
-
+            # Pool mass balance
             m.addConstr(x_feed_flows[0] + x_feed_flows[1] == gp.quicksum([x_pool_flows[i] for i in range(0, 4)]))
             m.addConstr(x_feed_flows[2] == gp.quicksum([x_pool_flows[i] for i in range(4, 8)]))
             m.addConstr(x_feed_flows[3] + x_feed_flows[4] == gp.quicksum([x_pool_flows[i] for i in range(8, 12)]))
             m.addConstr(x_feed_flows[5] == gp.quicksum([x_pool_flows[i] for i in range(12, 16)]))
 
-            ## Pool component balance
+            # Pool component balance
             m.addConstr(x_feed_flows[0] * self.robust_feed_mus[0] + x_feed_flows[1] * self.robust_feed_mus[1] ==
                         gp.quicksum([x_pool_flows[i] * x_pool_compositions[0] for i in range(0, 4)]))
-
             m.addConstr(self.robust_feed_mus[2] == x_pool_compositions[1])
-
-
-            m.addConstr(x_feed_flows[3] * self.robust_feed_mus[3] + x_feed_flows[4] *self.robust_feed_mus[4] ==
+            m.addConstr(x_feed_flows[3] * self.robust_feed_mus[3] + x_feed_flows[4] * self.robust_feed_mus[4] ==
                         gp.quicksum([x_pool_flows[i] * x_pool_compositions[2] for i in range(8, 12)]))
-
             m.addConstr(self.robust_feed_mus[5] == x_pool_compositions[3])
 
-            ## Product mass balance
-
+            # Product mass balance
             m.addConstr(gp.quicksum([x_pool_flows[i * 4 + 0] for i in range(4)]) == x_product_flows[0])
-
             m.addConstr(gp.quicksum([x_pool_flows[i * 4 + 1] for i in range(4)]) == x_product_flows[1])
-
             m.addConstr(gp.quicksum([x_pool_flows[i * 4 + 2] for i in range(4)]) == x_product_flows[2])
-
             m.addConstr(gp.quicksum([x_pool_flows[i * 4 + 3] for i in range(4)]) == x_product_flows[3])
 
-            ## Product quality balance
-
+            # Product quality balance
             m.addConstr(x_pool_flows[0] * x_pool_compositions[0] + x_pool_flows[4] *
                         x_pool_compositions[1] + x_pool_flows[8] * x_pool_compositions[2] + x_pool_flows[12] *
                         x_pool_compositions[3] <= x_product_flows[0] * product_quality[0])
@@ -1861,11 +1869,14 @@ class RobustPooling(UncertainModel):
             pass
 
         m.params.TimeLimit = self.gurobi_time_limit
-        m.params.NonConvex = 2 ## Required parameter update for Gurobi to solve nonconvex bilinear programming problems
+        m.params.NonConvex = 2  # Required parameter update for Gurobi to solve nonconvex bilinear programming problems
         m.optimize()
 
-        self.robust_incumbent = m.objVal # Best obtained solution
-        self.robust_bound = m.ObjBound # Best remaining bound. If it is equal to the incumbent, global optimisation is guaranteed
+        self.robust_incumbent = m.objVal  # Best obtained solution
+
+        # m.ObjBound returns the best remaining bound. If it is equal to the incumbent,
+        # global optimisation is guaranteed.
+        self.robust_bound = m.ObjBound
         self.runTime = m.Runtime
         self.problem_status = 'solved'
 
