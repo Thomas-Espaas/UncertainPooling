@@ -56,7 +56,7 @@ class UncertainModel:
             product_price = [9, 15]
             product_quality = [2.5, 1.5]
 
-            ## Load problem stats and data that will already have been set or obtained through optimisation
+            # Load problem stats and data that will already have been set or obtained through optimisation
 
             feed_mus = self.feed_mus
             feed_stds = [self.std, self.std, self.std]
@@ -71,9 +71,9 @@ class UncertainModel:
                           ]
             product_flows = [proxy_solution['product_flows[0]'], proxy_solution['product_flows[1]']]
 
-            ## The below calculates the compositions and standard deviations of compositions throughout the Haverly
-            ## network. Some handling must be done in case flows into a pool or product is zero (to avoid division
-            ## by zero errors)
+            # The below calculates the compositions and standard deviations of compositions throughout the Haverly
+            # network. Some handling must be done in case flows into a pool or product is zero (to avoid division
+            # by zero errors)
 
             pool_mus = [0, 0]
             pool_stds = [0, 0]
@@ -114,8 +114,8 @@ class UncertainModel:
                 product_mus[1] = 0
                 product_stds[1] = 1
 
-            ## Probabilities of the two products satisfying their quality constraints can be calculated using the
-            ## cumulative distribution function
+            # Probabilities of the two products satisfying their quality constraints can be calculated using the
+            # cumulative distribution function
 
             probabilities = [0, 0]
 
@@ -129,7 +129,7 @@ class UncertainModel:
             product_price = [9, 15]
             product_quality = [2.5, 1.5]
 
-            ## Load problem stats and data that will already have been set or obtained through optimisation
+            # Load problem stats and data that will already have been set or obtained through optimisation
 
             feed_mus = self.feed_mus
             feed_stds = [self.std, self.std, self.std]
@@ -144,9 +144,9 @@ class UncertainModel:
                           ]
             product_flows = [proxy_solution['product_flows[0]'], proxy_solution['product_flows[1]']]
 
-            ## The below calculates the compositions and standard deviations of compositions throughout the Haverly
-            ## network. Some handling must be done in case flows into a pool or product is zero (to avoid division
-            ## by zero errors)
+            # The below calculates the compositions and standard deviations of compositions throughout the Haverly
+            # network. Some handling must be done in case flows into a pool or product is zero (to avoid division
+            # by zero errors)
 
             pool_mus = [0, 0]
             pool_stds = [0, 0]
@@ -187,8 +187,8 @@ class UncertainModel:
                 product_mus[1] = 0
                 product_stds[1] = 1
 
-            ## Probabilities of the two products satisfying their quality constraints can be calculated using the
-            ## cumulative distribution function
+            # Probabilities of the two products satisfying their quality constraints can be calculated using the
+            # cumulative distribution function
 
             probabilities = [0, 0]
 
@@ -202,7 +202,7 @@ class UncertainModel:
             product_price = [9, 15]
             product_quality = [2.5, 1.5]
 
-            ## Load problem stats and data that will already have been set or obtained through optimisation
+            # Load problem stats and data that will already have been set or obtained through optimisation
 
             feed_mus = self.feed_mus
             feed_stds = [self.std, self.std, self.std]
@@ -217,9 +217,9 @@ class UncertainModel:
                           ]
             product_flows = [proxy_solution['product_flows[0]'], proxy_solution['product_flows[1]']]
 
-            ## The below calculates the compositions and standard deviations of compositions throughout the Haverly
-            ## network. Some handling must be done in case flows into a pool or product is zero (to avoid division
-            ## by zero errors)
+            # The below calculates the compositions and standard deviations of compositions throughout the Haverly
+            # network. Some handling must be done in case flows into a pool or product is zero (to avoid division
+            # by zero errors)
 
             pool_mus = [0, 0]
             pool_stds = [0, 0]
@@ -260,9 +260,8 @@ class UncertainModel:
                 product_mus[1] = 0
                 product_stds[1] = 1
 
-            ## Probabilities of the two products satisfying their quality constraints can be calculated using the
-            ## cumulative distribution function
-
+            # Probabilities of the two products satisfying their quality constraints can be calculated using the
+            # cumulative distribution function
             probabilities = [0, 0]
 
             probabilities[0] = norm_cdf(self.product_qualities[0], product_mus[0], product_stds[0])
@@ -275,7 +274,7 @@ class UncertainModel:
             product_price = [9, 15, 6, 12]
             product_quality = [2.5, 1.5, 3, 2]
 
-            ## Load problem stats and data that will already have been set or obtained through optimisation
+            # Load problem stats and data that will already have been set or obtained through optimisation
 
             feed_mus = self.feed_mus
             feed_stds = [self.std, self.std, self.std, self.std, self.std, self.std]
@@ -298,9 +297,9 @@ class UncertainModel:
             product_flows = [proxy_solution['product_flows[0]'], proxy_solution['product_flows[1]'],
                              proxy_solution['product_flows[2]'], proxy_solution['product_flows[3]']]
 
-            ## The below calculates the compositions and standard deviations of compositions throughout the Foulds 2
-            ## network. Some handling must be done in case flows into a pool or product is zero (to avoid division
-            ## by zero errors)
+            # The below calculates the compositions and standard deviations of compositions throughout the Foulds 2
+            # network. Some handling must be done in case flows into a pool or product is zero (to avoid division
+            # by zero errors)
 
             pool_mus = [0, 0, 0, 0]
             pool_stds = [0, 0, 0, 0]
@@ -368,9 +367,8 @@ class UncertainModel:
                 product_mus[3] = 0
                 product_stds[3] = 1
 
-            ## Probabilities of the two products satisfying their quality constraints can be calculated using the
-            ## cumulative distribution function
-
+            # Probabilities of the two products satisfying their quality constraints can be calculated using the
+            # cumulative distribution function
             probabilities = [0, 0, 0, 0]
 
             probabilities[0] = norm_cdf(self.product_qualities[0], product_mus[0], product_stds[0])
@@ -1205,12 +1203,12 @@ class ScenarioPooling(UncertainModel):
                     prob_sums[i] += self.var1_scenario_probs[j] * y_product_satisfaction[i, j]
                 m.addConstr(x_p[i] == prob_sums[i])
 
-        m.params.NonConvex = 2
+        m.params.NonConvex = 2  # Required parameter update for Gurobi to solve nonconvex problems
         m.params.TimeLimit = self.gurobi_time_limit
         m.optimize()
 
-        self.scenario_incumbent = m.objVal # The current best obtained solution
-        self.scenario_bound = m.ObjBound # The best lower bound achieved. May differ from the best obtained solution.
+        self.scenario_incumbent = m.objVal  # The current best obtained solution
+        self.scenario_bound = m.ObjBound  # The best lower bound achieved. May differ from the best obtained solution.
         self.runTime = m.Runtime
         self.problem_status = 'solved'
 
@@ -1230,6 +1228,7 @@ class ScenarioPooling(UncertainModel):
         """
         if self.scenario_generation_strategy == 'Lee':
             if self.problem_name == 'Haverly_1':
+                # First we define the values the uncertain parameters will take in the different scenarios
                 self.var1_scenarios = [
                     (-3 * self.std + self.feed_mus[0] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen)
                     for i in range(self.num_scen)]
@@ -1239,6 +1238,8 @@ class ScenarioPooling(UncertainModel):
                 self.var3_scenarios = [
                     (-3 * self.std + self.feed_mus[2] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen)
                     for i in range(self.num_scen)]
+
+                # Next we determine the probabilities associated with each realisation of the uncertain parameters
 
                 self.var1_scenario_probs = [
                     norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std / self.num_scen, loc=self.feed_mus[0],
@@ -1280,9 +1281,10 @@ class ScenarioPooling(UncertainModel):
                     1 - norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std * (self.num_scen - 1) /
                                  self.num_scen, loc=self.feed_mus[2], scale=self.std))
 
-                self.p_o = 'Lee'
+                self.p_o = 'Lee'  # If the scenario generation method is 'Lee' we find it easier to identify it as such
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
             elif self.problem_name == 'Haverly_2':
+                # First we define the values different uncertain parameters can take in the different scenarios
                 self.var1_scenarios = [
                     (-3 * self.std + self.feed_mus[0] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen)
                     for i in range(self.num_scen)]
@@ -1293,6 +1295,7 @@ class ScenarioPooling(UncertainModel):
                     (-3 * self.std + self.feed_mus[2] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen)
                     for i in range(self.num_scen)]
 
+                # Next we specify the probabilities associated with the different realisations of the uncertain params
                 self.var1_scenario_probs = [
                     norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std / self.num_scen, loc=self.feed_mus[0],
                              scale=self.std)]
@@ -1332,9 +1335,10 @@ class ScenarioPooling(UncertainModel):
                     1 - norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std * (self.num_scen - 1) /
                                  self.num_scen, loc=self.feed_mus[2], scale=self.std))
 
-                self.p_o = 'Lee'
+                self.p_o = 'Lee'  # We find it easier to identify the 'Lee' option like this
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
             elif self.problem_name == 'Haverly_3':
+                # Start by defining the values the uncertain parameters can take in different scenarios
                 self.var1_scenarios = [
                     (-3 * self.std + self.feed_mus[0] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen)
                     for i in range(self.num_scen)]
@@ -1345,6 +1349,7 @@ class ScenarioPooling(UncertainModel):
                     (-3 * self.std + self.feed_mus[2] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen)
                     for i in range(self.num_scen)]
 
+                # Then specify the probabilities associated with the different scenarios
                 self.var1_scenario_probs = [
                     norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std / self.num_scen, loc=self.feed_mus[0],
                              scale=self.std)]
@@ -1387,63 +1392,83 @@ class ScenarioPooling(UncertainModel):
                 self.p_o = 'Lee'
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
             elif self.problem_name == 'Foulds_2':
-                self.var1_scenarios = [(-3 * self.std + self.feed_mus[0] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
-                self.var2_scenarios = [(-3 * self.std + self.feed_mus[1] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
-                self.var3_scenarios = [(-3 * self.std + self.feed_mus[2] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
-                self.var4_scenarios = [(-3 * self.std + self.feed_mus[3] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
-                self.var5_scenarios = [(-3 * self.std + self.feed_mus[4] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
-                self.var6_scenarios = [(-3 * self.std + self.feed_mus[5] + 3 * self.std / self.num_scen + i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
+                # First we define the values the uncertain parameters can take in different scenarios
+                self.var1_scenarios = [(-3 * self.std + self.feed_mus[0] + 3 * self.std / self.num_scen +
+                                        i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
+                self.var2_scenarios = [(-3 * self.std + self.feed_mus[1] + 3 * self.std / self.num_scen +
+                                        i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
+                self.var3_scenarios = [(-3 * self.std + self.feed_mus[2] + 3 * self.std / self.num_scen +
+                                        i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
+                self.var4_scenarios = [(-3 * self.std + self.feed_mus[3] + 3 * self.std / self.num_scen +
+                                        i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
+                self.var5_scenarios = [(-3 * self.std + self.feed_mus[4] + 3 * self.std / self.num_scen +
+                                        i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
+                self.var6_scenarios = [(-3 * self.std + self.feed_mus[5] + 3 * self.std / self.num_scen +
+                                        i * 6 * self.std / self.num_scen) for i in range(self.num_scen)]
 
-                self.var1_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std / self.num_scen, loc=self.feed_mus[0], scale=self.std)]
-                self.var2_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[1] + 6 * self.std / self.num_scen, loc=self.feed_mus[1], scale=self.std)]
-                self.var3_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std / self.num_scen, loc=self.feed_mus[2], scale=self.std)]
-                self.var4_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[3] + 6 * self.std / self.num_scen, loc=self.feed_mus[3], scale=self.std)]
-                self.var5_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[4] + 6 * self.std / self.num_scen, loc=self.feed_mus[4], scale=self.std)]
-                self.var6_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[5] + 6 * self.std / self.num_scen, loc=self.feed_mus[5], scale=self.std)]
+                # Next specify the probabilities associated with each scenario
+                self.var1_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std / self.num_scen,
+                                                     loc=self.feed_mus[0], scale=self.std)]
+                self.var2_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[1] + 6 * self.std / self.num_scen,
+                                                     loc=self.feed_mus[1], scale=self.std)]
+                self.var3_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std / self.num_scen,
+                                                     loc=self.feed_mus[2], scale=self.std)]
+                self.var4_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[3] + 6 * self.std / self.num_scen,
+                                                     loc=self.feed_mus[3], scale=self.std)]
+                self.var5_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[4] + 6 * self.std / self.num_scen,
+                                                     loc=self.feed_mus[4], scale=self.std)]
+                self.var6_scenario_probs = [norm.cdf(-3 * self.std + self.feed_mus[5] + 6 * self.std / self.num_scen,
+                                                     loc=self.feed_mus[5], scale=self.std)]
 
                 for i in range(1, self.num_scen - 1):
-                    self.var1_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std * (i + 1) / self.num_scen,
-                                                             loc=self.feed_mus[0], scale=self.std) - norm.cdf(-3 * self.std + self.feed_mus[0] +
-                                                                                                 6 * self.std * i / self.num_scen,
-                                                                                                 loc=self.feed_mus[0], scale=self.std))
-
-                    self.var2_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[1] + 6 * self.std * (i + 1) / self.num_scen,
-                                                             loc=self.feed_mus[1], scale=self.std) - norm.cdf(-3 * self.std + self.feed_mus[1] +
-                                                                                                 6 * self.std * i / self.num_scen,
-                                                                                                 loc=self.feed_mus[1], scale=self.std))
-
-                    self.var3_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std * (i + 1) / self.num_scen,
-                                                             loc=self.feed_mus[2], scale=self.std) - norm.cdf(-3 * self.std + self.feed_mus[2] +
-                                                                                                 6 * self.std * i / self.num_scen,
-                                                                                                 loc=self.feed_mus[2], scale=self.std))
-
-                    self.var4_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[3] + 6 * self.std * (i + 1) / self.num_scen,
-                                                             loc=self.feed_mus[3], scale=self.std) - norm.cdf(-3 * self.std + self.feed_mus[3] +
-                                                                                                 6 * self.std * i / self.num_scen,
-                                                                                                 loc=self.feed_mus[3], scale=self.std))
-
-                    self.var5_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[4] + 6 * self.std * (i + 1) / self.num_scen,
-                                                             loc=self.feed_mus[4], scale=self.std) - norm.cdf(-3 * self.std + self.feed_mus[4] +
-                                                                                                 6 * self.std * i / self.num_scen,
-                                                                                                 loc=self.feed_mus[4], scale=self.std))
-
-                    self.var6_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[5] + 6 * self.std * (i + 1) / self.num_scen,
-                                                             loc=self.feed_mus[5], scale=self.std) - norm.cdf(-3 * self.std + self.feed_mus[5] +
-                                                                                                 6 * self.std * i / self.num_scen,
-                                                                                                 loc=self.feed_mus[5], scale=self.std))
-
-                self.var1_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std * (self.num_scen - 1) /
+                    self.var1_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std * (i + 1) /
+                                                             self.num_scen, loc=self.feed_mus[0], scale=self.std) -
+                                                    norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std * i /
                                                              self.num_scen, loc=self.feed_mus[0], scale=self.std))
-                self.var2_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[1] + 6 * self.std * (self.num_scen - 1) /
+
+                    self.var2_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[1] + 6 * self.std * (i + 1) /
+                                                             self.num_scen, loc=self.feed_mus[1], scale=self.std) -
+                                                    norm.cdf(-3 * self.std + self.feed_mus[1] + 6 * self.std * i /
                                                              self.num_scen, loc=self.feed_mus[1], scale=self.std))
-                self.var3_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std * (self.num_scen - 1) /
+
+                    self.var3_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std * (i + 1) /
+                                                             self.num_scen, loc=self.feed_mus[2], scale=self.std) -
+                                                    norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std * i /
                                                              self.num_scen, loc=self.feed_mus[2], scale=self.std))
-                self.var4_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[3] + 6 * self.std * (self.num_scen - 1) /
+
+                    self.var4_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[3] + 6 * self.std * (i + 1) /
+                                                             self.num_scen, loc=self.feed_mus[3], scale=self.std) -
+                                                    norm.cdf(-3 * self.std + self.feed_mus[3] + 6 * self.std * i /
                                                              self.num_scen, loc=self.feed_mus[3], scale=self.std))
-                self.var5_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[4] + 6 * self.std * (self.num_scen - 1) /
+
+                    self.var5_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[4] + 6 * self.std * (i + 1) /
+                                                             self.num_scen, loc=self.feed_mus[4], scale=self.std) -
+                                                    norm.cdf(-3 * self.std + self.feed_mus[4] + 6 * self.std * i /
                                                              self.num_scen, loc=self.feed_mus[4], scale=self.std))
-                self.var6_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[5] + 6 * self.std * (self.num_scen - 1) /
+
+                    self.var6_scenario_probs.append(norm.cdf(-3 * self.std + self.feed_mus[5] + 6 * self.std * (i + 1) /
+                                                             self.num_scen, loc=self.feed_mus[5], scale=self.std) -
+                                                    norm.cdf(-3 * self.std + self.feed_mus[5] + 6 * self.std * i /
                                                              self.num_scen, loc=self.feed_mus[5], scale=self.std))
+
+                self.var1_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[0] + 6 * self.std *
+                                                             (self.num_scen - 1) / self.num_scen, loc=self.feed_mus[0],
+                                                             scale=self.std))
+                self.var2_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[1] + 6 * self.std *
+                                                             (self.num_scen - 1) / self.num_scen, loc=self.feed_mus[1],
+                                                             scale=self.std))
+                self.var3_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[2] + 6 * self.std *
+                                                             (self.num_scen - 1) / self.num_scen, loc=self.feed_mus[2],
+                                                             scale=self.std))
+                self.var4_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[3] + 6 * self.std *
+                                                             (self.num_scen - 1) / self.num_scen, loc=self.feed_mus[3],
+                                                             scale=self.std))
+                self.var5_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[4] + 6 * self.std *
+                                                             (self.num_scen - 1) / self.num_scen, loc=self.feed_mus[4],
+                                                             scale=self.std))
+                self.var6_scenario_probs.append(1 - norm.cdf(-3 * self.std + self.feed_mus[5] + 6 * self.std *
+                                                             (self.num_scen - 1) / self.num_scen, loc=self.feed_mus[5],
+                                                             scale=self.std))
 
                 self.p_o = 'Lee'
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
@@ -1469,9 +1494,10 @@ class ScenarioPooling(UncertainModel):
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
         elif self.scenario_generation_strategy == 'Basic':
             if self.problem_name == 'Haverly_1':
-                p_o = self.scenario_generation_strategy_po
-                delta_x = self.std / (np.sqrt(2 * p_o))
+                p_o = self.scenario_generation_strategy_po  # Probability for the low and high scenarios
+                delta_x = self.std / (np.sqrt(2 * p_o))  # Deviation from the mean calculated to retain variance
 
+                # Values and associated probabilities calculated for all scenarios
                 self.var1_scenarios = [self.feed_mus[0] - delta_x, self.feed_mus[0], self.feed_mus[0] + delta_x]
                 self.var1_scenario_probs = [p_o, 1.0 - 2 * p_o, p_o]
                 self.var2_scenarios = [self.feed_mus[1] - delta_x, self.feed_mus[1], self.feed_mus[1] + delta_x]
@@ -1479,12 +1505,13 @@ class ScenarioPooling(UncertainModel):
                 self.var3_scenarios = [self.feed_mus[2] - delta_x, self.feed_mus[2], self.feed_mus[2] + delta_x]
                 self.var3_scenario_probs = [p_o, 1.0 - 2 * p_o, p_o]
 
-                self.p_o = p_o ## This has kind of already been set?
+                self.p_o = p_o
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
             elif self.problem_name == 'Haverly_2':
-                p_o = self.scenario_generation_strategy_po
-                delta_x = self.std / (np.sqrt(2 * p_o))
+                p_o = self.scenario_generation_strategy_po  # Probability for the low and high scenarios
+                delta_x = self.std / (np.sqrt(2 * p_o))  # Deviation from the mean calculated to retain variance
 
+                # Values and associated probabilities calculated for all scenarios
                 self.var1_scenarios = [self.feed_mus[0] - delta_x, self.feed_mus[0], self.feed_mus[0] + delta_x]
                 self.var1_scenario_probs = [p_o, 1.0 - 2 * p_o, p_o]
                 self.var2_scenarios = [self.feed_mus[1] - delta_x, self.feed_mus[1], self.feed_mus[1] + delta_x]
@@ -1492,12 +1519,13 @@ class ScenarioPooling(UncertainModel):
                 self.var3_scenarios = [self.feed_mus[2] - delta_x, self.feed_mus[2], self.feed_mus[2] + delta_x]
                 self.var3_scenario_probs = [p_o, 1.0 - 2 * p_o, p_o]
 
-                self.p_o = p_o ## This has kind of already been set?
+                self.p_o = p_o
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
             elif self.problem_name == 'Haverly_3':
-                p_o = self.scenario_generation_strategy_po
-                delta_x = self.std / (np.sqrt(2 * p_o))
+                p_o = self.scenario_generation_strategy_po  # Probability for the low and high scenarios
+                delta_x = self.std / (np.sqrt(2 * p_o))  # Deviation from the mean calculated to retain variance
 
+                # Values and associated probabilities calculated for all scenarios
                 self.var1_scenarios = [self.feed_mus[0] - delta_x, self.feed_mus[0], self.feed_mus[0] + delta_x]
                 self.var1_scenario_probs = [p_o, 1.0 - 2 * p_o, p_o]
                 self.var2_scenarios = [self.feed_mus[1] - delta_x, self.feed_mus[1], self.feed_mus[1] + delta_x]
@@ -1508,9 +1536,10 @@ class ScenarioPooling(UncertainModel):
                 self.p_o = p_o ## This has kind of already been set?
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
             elif self.problem_name == 'Foulds_2':
-                p_o = self.scenario_generation_strategy_po
-                delta_x = self.std / (np.sqrt(2 * p_o))
+                p_o = self.scenario_generation_strategy_po  # Probability for the low and high scenarios
+                delta_x = self.std / (np.sqrt(2 * p_o))  # Deviation from the mean calculated to retain variance
 
+                # Values and associated probabilities calculated for all scenarios
                 self.var1_scenarios = [self.feed_mus[0] - delta_x, self.feed_mus[0], self.feed_mus[0] + delta_x]
                 self.var1_scenario_probs = [p_o, 1.0 - 2 * p_o, p_o]
                 self.var2_scenarios = [self.feed_mus[1] - delta_x, self.feed_mus[1], self.feed_mus[1] + delta_x]
@@ -1524,7 +1553,7 @@ class ScenarioPooling(UncertainModel):
                 self.var6_scenarios = [self.feed_mus[5] - delta_x, self.feed_mus[5], self.feed_mus[5] + delta_x]
                 self.var6_scenario_probs = [p_o, 1.0 - 2 * p_o, p_o]
 
-                self.p_o = p_o ## This has kind of already been set?
+                self.p_o = p_o
                 self.delta_x = self.var1_scenarios[1] - self.var1_scenarios[0]
             elif self.problem_name == 'Segarwak':
                 pass
@@ -1862,7 +1891,7 @@ class RobustPooling(UncertainModel):
             dataframe = pd.DataFrame(index=index, columns=['f_hat', 'f', 'f_LB', 'CPU'])
 
         dataframe.loc[(self.std, self.robust_radius), :] = [self.robust_incumbent, self.stochastic_solution,
-                                                    self.robust_bound, self.runTime]
+                                                            self.robust_bound, self.runTime]
 
         dataframe = dataframe.sort_index(ascending=False)
 
@@ -1884,7 +1913,10 @@ class StochPooling(UncertainModel):
         self.model_class = 'continuous'
         self.problem_name = problem_name
         self.std = std
-        self.cut_offs = [30, np.inf, 50]  ## Iterations for partitioning the product compostition mu, iterations for the feed and pool flowrates, and runtime in seconds
+
+        # Solver cut offs are set in 1) iterations for partitioning the product compostition mu, 2) iterations for the
+        # feed and pool flow rates and 3) runtime in seconds
+        self.cut_offs = [30, np.inf, 50]
         self.local_solver_tol = 1.0e-8
         self.iteration_counter = 0
         self.problem_status = 'unsolved'
@@ -1894,15 +1926,19 @@ class StochPooling(UncertainModel):
         self.set_up_global_structure()
 
     def set_up_global_structure(self):
-        ## Creating the structures needed to keep track of the progress of the global solver
-        self.lower_bounds = []  ## A list of lists of lower bounds
-        self.upper_bounds = []  ## A list of lists of upper bounds
-        self.obj_lower_bound = []  ## A list of lower bounds
-        self.obj_upper_bound = []  ## A list of upper bounds
+        """
+        Method to define many of the computational structures needed to keep track of the progress of the global solver
+        and the original problem bounds
+        """
 
-        self.current_best_solution = np.inf  ## The best solution found so far
-        self.current_best_solution_x = None  ## The variables values that give this solution
-        self.iterational_best_lower_bound = []  ## The best lower bound at each iteration
+        self.lower_bounds = []  # A list of lists of lower bounds
+        self.upper_bounds = []  # A list of lists of upper bounds
+        self.obj_lower_bound = []  # A list of lower bounds
+        self.obj_upper_bound = []  # A list of upper bounds
+
+        self.current_best_solution = np.inf  # The best solution found so far
+        self.current_best_solution_x = None  # The variables values that give this solution
+        self.iterational_best_lower_bound = []  # The best lower bound at each iteration
 
         if self.problem_name == 'Haverly_1':
             self.lower_bounds.append(np.array([0, 0, 0,
@@ -1994,6 +2030,10 @@ class StochPooling(UncertainModel):
         if self.problem_name in ['Haverly_1', 'Haverly_2', 'Haverly_3']:
             self.feed_mus = [3, 1, 2]
             self.product_qualities = [2.5, 1.5]
+
+            # Follow a general spatial branch and bound algorithmic framework to solve the nonconvex problem
+
+            # Solve the initial lower bounding scheme to get a valid lower bound on the original problem
             candidate_lower_bound = self.lower_bounding(0)
 
             if candidate_lower_bound[0] is True:
@@ -2109,8 +2149,7 @@ class StochPooling(UncertainModel):
                     del self.upper_bounds[-1]
 
                 convergence_criteria = False
-                # print(type(current_best_solution))
-                # print(isinstance(current_best_solution, float), not obj_lower_bound)
+
                 if (isinstance(self.current_best_solution,
                                float) and not self.obj_lower_bound) or self.current_best_solution - min(
                     self.obj_lower_bound) <= 1.0e-4:
@@ -2147,8 +2186,7 @@ class StochPooling(UncertainModel):
                     print('Best solution objective: ', self.current_best_solution)
                     print('And the solution: ', self.current_best_solution_x)
                     print('The single best lower bound: ', self.iterational_best_lower_bound[-1])
-                    # print(lower_bounds)
-                    # print(upper_bounds)
+
                     self.problem_status = 'solved'
 
                     break
@@ -2286,8 +2324,7 @@ class StochPooling(UncertainModel):
                     del self.upper_bounds[-1]
 
                 convergence_criteria = False
-                # print(type(current_best_solution))
-                # print(isinstance(current_best_solution, float), not obj_lower_bound)
+
                 if (isinstance(self.current_best_solution,
                                float) and not self.obj_lower_bound) or self.current_best_solution - min(
                         self.obj_lower_bound) <= 1.0e-4:
@@ -2324,8 +2361,7 @@ class StochPooling(UncertainModel):
                     print('Best solution objective: ', self.current_best_solution)
                     print('And the solution: ', self.current_best_solution_x)
                     print('The single best lower bound: ', self.iterational_best_lower_bound[-1])
-                    # print(lower_bounds)
-                    # print(upper_bounds)
+
                     self.problem_status = 'solved'
 
                     break
@@ -2348,6 +2384,8 @@ class StochPooling(UncertainModel):
         relaxation of the nonconvex problem and solves this to obtain a valid lower bound on the region of interest
         """
         if self.problem_name == 'Haverly_1' or self.problem_name == 'Haverly_2':
+
+            # Set up the casadi variables needed for the problem
             feed_flows = casadi.SX.sym('feed_flows', 3)
             pool_flows = casadi.SX.sym('pool_flows', 4)
             product_flows = casadi.SX.sym('product_flows', 2)
@@ -2357,6 +2395,7 @@ class StochPooling(UncertainModel):
             product_sigmas = casadi.SX.sym('product_sigma', 2)
             product_p = casadi.SX.sym('product_probabilities', 2)
 
+            # Specify the problem parameters
             feed_price = [6, 16, 10]
             feed_mus = [3, 1, 2]
 
@@ -2368,14 +2407,15 @@ class StochPooling(UncertainModel):
             lb = list(self.lower_bounds[node].copy())
             ub = list(self.upper_bounds[node].copy())
 
+            # Set the objective function
             objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_p * product_flows * product_price)
 
+            # Initiate a casadi SX object, and two lists to gradually build the constraints of the problem
             g = casadi.SX()
             lbg = []
             ubg = []
 
-            ## Pool mass balance
-
+            # Pool mass balance
             g = casadi.vertcat(g,
                                feed_flows[0] + feed_flows[1] - casadi.sum1(pool_flows[:2]),
                                feed_flows[2] - casadi.sum1(pool_flows[2:4]),
@@ -2384,8 +2424,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product mass balance
-
+            # Product mass balance
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 2 for i in range(2)]]) - product_flows[0],
                                casadi.sum1(pool_flows[[i * 2 + 1 for i in range(2)]]) - product_flows[1],
@@ -2394,8 +2433,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Pool mu balance
-
+            # Pool mu balance
             pool_mu_bilinears = casadi.SX.sym('pool_mu_bilinears', 4)
 
             g = casadi.vertcat(g,
@@ -2407,7 +2445,8 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Pool sigma balance
+            # Next we have to define a number of artificial problem variables in order to obtain bilinear terms
+            # that we can more easily define the convex relaxations for
 
             pool_sigma_bilinears = casadi.SX.sym('pool_sigma_bilinears', 4)
             pool_sigma_squared_bilinears = casadi.SX.sym('pool_sigma_squared_bilinears', 4)
@@ -2416,6 +2455,7 @@ class StochPooling(UncertainModel):
 
             feed_flows_squared = casadi.SX.sym('feed_flows_squared', 3)
 
+            # Pool sigma balance
             g = casadi.vertcat(g,
                                pool_sigma_bilinears_sums[0] - casadi.sum1(pool_sigma_bilinears[:2]),
                                pool_sigma_bilinears_sums[1] - casadi.sum1(pool_sigma_bilinears[2:4])
@@ -2424,6 +2464,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
+            # Pool sum standard deviations
             g = casadi.vertcat(g,
                                feed_flows_squared[0] * self.std ** 2 + feed_flows_squared[1] * self.std ** 2 -
                                pool_sigma_bilinears_sums_squared[0],
@@ -2433,8 +2474,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product mu balance
-
+            # Product mu balance
             product_mu_bilinears = casadi.SX.sym('product_mu_bilinears', 2)
 
             g = casadi.vertcat(g,
@@ -2444,7 +2484,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product sigma balance
+            # Product sigma balance
 
             product_sigma_bilinears = casadi.SX.sym('product_sigma_bilienars', 2)
             product_sigma_squared_bilinears = casadi.SX.sym('product_sigma_squared_bilinears', 2)
@@ -2459,8 +2499,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Underestimating the cumulative distribution function
-
+            # Finally the cumulative distribution function can be relaxed using over and under esttimators
             for i in range(2):
                 if ub[13 + i] <= product_quality[i]:
                     g = casadi.vertcat(g,
@@ -2496,6 +2535,9 @@ class StochPooling(UncertainModel):
 
             all_variables_names = [all_variables[i].name() for i in range(all_variables.shape[0])]
 
+            # Add all the bilinear relationships to a list such that the convex relaxations can be added to the problem
+            # formulation
+
             bilinear_terms = [[feed_flows[i], feed_flows[i], feed_flows_squared[i]] for i in range(3)]
 
             bilinear_terms.extend(
@@ -2525,6 +2567,10 @@ class StochPooling(UncertainModel):
             summed_terms = [
                 [pool_sigma_bilinears[i * 2], pool_sigma_bilinears[i * 2 + 1],
                  pool_sigma_bilinears_sums[i]] for i in range(2)]
+
+            # We create mirror structures of the ones containing the bilinear terms where instead of the term we focus
+            # on the index the variables have in the list of all variables. This is so we can easily access the right
+            # variables later.
 
             bilinear_names = []
             bilinear_indices = []
@@ -2559,6 +2605,7 @@ class StochPooling(UncertainModel):
                 lb[bilinear_indices[i][2]] = lb[bilinear_indices[i][0]] * lb[bilinear_indices[i][1]]
                 ub[bilinear_indices[i][2]] = ub[bilinear_indices[i][0]] * ub[bilinear_indices[i][1]]
 
+            # Finally we can add the actual McCormick relaxation terms to the constraint set
             for i in range(len(bilinear_indices)):
                 g = casadi.vertcat(g,
                                    -all_variables[bilinear_indices[i][2]] + lb[bilinear_indices[i][0]] * all_variables[
@@ -2587,6 +2634,7 @@ class StochPooling(UncertainModel):
                 ubg.append(0)
                 ubg.append(0)
         elif self.problem_name == 'Haverly_3':
+            # Set up the casadi variables needed for the problem
             feed_flows = casadi.SX.sym('feed_flows', 3)
             pool_flows = casadi.SX.sym('pool_flows', 4)
             product_flows = casadi.SX.sym('product_flows', 2)
@@ -2596,6 +2644,7 @@ class StochPooling(UncertainModel):
             product_sigmas = casadi.SX.sym('product_sigma', 2)
             product_p = casadi.SX.sym('product_probabilities', 2)
 
+            # Specify the problem parameters
             feed_price = [6, 13, 10]
             feed_mus = [3, 1, 2]
 
@@ -2607,14 +2656,15 @@ class StochPooling(UncertainModel):
             lb = list(self.lower_bounds[node].copy())
             ub = list(self.upper_bounds[node].copy())
 
+            # Set the objective function of the problem
             objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_p * product_flows * product_price)
 
+            # Initiate a casadi SX object, and two lists to gradually build the constraints of the problem
             g = casadi.SX()
             lbg = []
             ubg = []
 
-            ## Pool mass balance
-
+            # Pool mass balance
             g = casadi.vertcat(g,
                                feed_flows[0] + feed_flows[1] - casadi.sum1(pool_flows[:2]),
                                feed_flows[2] - casadi.sum1(pool_flows[2:4]),
@@ -2623,7 +2673,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product mass balance
+            # Product mass balance
 
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 2 for i in range(2)]]) - product_flows[0],
@@ -2633,7 +2683,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Pool mu balance
+            # Pool mu balance
 
             pool_mu_bilinears = casadi.SX.sym('pool_mu_bilinears', 4)
 
@@ -2646,8 +2696,8 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Pool sigma balance
-
+            # Next we have to define a number of artificial problem variables in order to obtain bilinear terms
+            # that we can more easily define the convex relaxations for.
             pool_sigma_bilinears = casadi.SX.sym('pool_sigma_bilinears', 4)
             pool_sigma_squared_bilinears = casadi.SX.sym('pool_sigma_squared_bilinears', 4)
             pool_sigma_bilinears_sums = casadi.SX.sym('pool_sigma_bilinears_sums', 2)
@@ -2655,6 +2705,7 @@ class StochPooling(UncertainModel):
 
             feed_flows_squared = casadi.SX.sym('feed_flows_squared', 3)
 
+            # Pool sigma balance
             g = casadi.vertcat(g,
                                pool_sigma_bilinears_sums[0] - casadi.sum1(pool_sigma_bilinears[:2]),
                                pool_sigma_bilinears_sums[1] - casadi.sum1(pool_sigma_bilinears[2:4])
@@ -2672,7 +2723,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product mu balance
+            # Product mu balance
 
             product_mu_bilinears = casadi.SX.sym('product_mu_bilinears', 2)
 
@@ -2683,7 +2734,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product sigma balance
+            # Product sigma balance
 
             product_sigma_bilinears = casadi.SX.sym('product_sigma_bilienars', 2)
             product_sigma_squared_bilinears = casadi.SX.sym('product_sigma_squared_bilinears', 2)
@@ -2698,8 +2749,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Underestimating the cumulative distribution function
-
+            # Underestimating the cumulative distribution function
             for i in range(2):
                 if ub[13 + i] <= product_quality[i]:
                     g = casadi.vertcat(g,
@@ -2735,6 +2785,8 @@ class StochPooling(UncertainModel):
 
             all_variables_names = [all_variables[i].name() for i in range(all_variables.shape[0])]
 
+            # Add all the bilinear relationships to a list such that the convex relaxations can be added to the problem
+            # formulation.
             bilinear_terms = [[feed_flows[i], feed_flows[i], feed_flows_squared[i]] for i in range(3)]
 
             bilinear_terms.extend(
@@ -2765,6 +2817,9 @@ class StochPooling(UncertainModel):
                 [pool_sigma_bilinears[i * 2], pool_sigma_bilinears[i * 2 + 1],
                  pool_sigma_bilinears_sums[i]] for i in range(2)]
 
+            # We create mirror structures of the ones containing the bilinear terms where instead of the term we focus
+            # on the index the variables have in the list of all variables. This is so we can easily access the right
+            # variables later.
             bilinear_names = []
             bilinear_indices = []
 
@@ -2798,6 +2853,7 @@ class StochPooling(UncertainModel):
                 lb[bilinear_indices[i][2]] = lb[bilinear_indices[i][0]] * lb[bilinear_indices[i][1]]
                 ub[bilinear_indices[i][2]] = ub[bilinear_indices[i][0]] * ub[bilinear_indices[i][1]]
 
+            # Finally we can add the actual McCormick relaxation terms to the constraint set
             for i in range(len(bilinear_indices)):
                 g = casadi.vertcat(g,
                                    -all_variables[bilinear_indices[i][2]] + lb[bilinear_indices[i][0]] * all_variables[
@@ -2826,6 +2882,7 @@ class StochPooling(UncertainModel):
                 ubg.append(0)
                 ubg.append(0)
         elif self.problem_name == 'Foulds_2':
+            # Set up the casadi variables needed for the problem
             feed_flows = casadi.SX.sym('feed_flows', 6)
             pool_flows = casadi.SX.sym('pool_flows', 16)
             product_flows = casadi.SX.sym('product_flows', 4)
@@ -2835,6 +2892,7 @@ class StochPooling(UncertainModel):
             product_sigmas = casadi.SX.sym('product_sigma', 4)
             product_p = casadi.SX.sym('product_probabilities', 4)
 
+            # Specify the problem parameters
             feed_price = [6, 16, 10, 3, 13, 7]
             feed_mus = [3, 1, 2, 3.5, 1.5, 2.5]
 
@@ -2846,13 +2904,15 @@ class StochPooling(UncertainModel):
             lb = list(self.lower_bounds[node].copy())
             ub = list(self.upper_bounds[node].copy())
 
+            # Set the objective function of the problem
             objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_p * product_flows * product_price)
 
+            # Initiate a casadi SX object, and two lists to gradually build the constraints of the problem
             g = casadi.SX()
             lbg = []
             ubg = []
 
-            ## Pool mass balance
+            # Pool mass balance
 
             g = casadi.vertcat(g,
                                feed_flows[0] + feed_flows[1] - casadi.sum1(pool_flows[:4]),
@@ -2864,7 +2924,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Product mass balance
+            # Product mass balance
 
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 4 for i in range(4)]]) - product_flows[0],
@@ -2876,7 +2936,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Pool mu balance
+            # Pool mu balance
 
             pool_mu_bilinears = casadi.SX.sym('pool_mu_bilinears', 16)
 
@@ -2892,8 +2952,8 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Pool sigma balance
-
+            # Next we have to define a number of artificial problem variables in order to obtain bilinear terms
+            # that we can more easily define the convex relaxations for.
             pool_sigma_bilinears = casadi.SX.sym('pool_sigma_bilinears', 16)
             pool_sigma_squared_bilinears = casadi.SX.sym('pool_sigma_squared_bilinears', 16)
             pool_sigma_bilinears_sums = casadi.SX.sym('pool_sigma_bilinears_sums', 4)
@@ -2901,6 +2961,7 @@ class StochPooling(UncertainModel):
 
             feed_flows_squared = casadi.SX.sym('feed_flows_squared', 6)
 
+            # Pool sigma balance
             g = casadi.vertcat(g,
                                pool_sigma_bilinears_sums[0] - casadi.sum1(pool_sigma_bilinears[:4]),
                                pool_sigma_bilinears_sums[1] - casadi.sum1(pool_sigma_bilinears[4:8]),
@@ -2912,10 +2973,6 @@ class StochPooling(UncertainModel):
             ubg.extend([0, 0, 0, 0])
 
             g = casadi.vertcat(g,
-                               # feed_flows_squared[0] * self.std**2 + feed_flows_squared[1] * self.std**2 - casadi.sum1(pool_sigma_squared_bilinears[:4]),
-                               # feed_flows_squared[2] * self.std**2 - casadi.sum1(pool_sigma_squared_bilinears[4:8]),
-                               # feed_flows_squared[3] * self.std**2 + feed_flows_squared[4] * self.std**2 - casadi.sum1(pool_sigma_squared_bilinears[8:12]),
-                               # feed_flows_squared[5] * self.std**2 - casadi.sum1(pool_sigma_squared_bilinears[12:16])
                                feed_flows_squared[0] * self.std ** 2 + feed_flows_squared[1] * self.std ** 2 -
                                pool_sigma_bilinears_sums_squared[0],
                                feed_flows_squared[2] * self.std ** 2 - pool_sigma_bilinears_sums_squared[1],
@@ -2927,7 +2984,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Product mu balance
+            # Product mu balance
 
             product_mu_bilinears = casadi.SX.sym('product_mu_bilinears', 4)
 
@@ -2940,7 +2997,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Product sigma balance
+            # Product sigma balance
 
             product_sigma_bilinears = casadi.SX.sym('product_sigma_bilienars', 4)
             product_sigma_squared_bilinears = casadi.SX.sym('product_sigma_squared_bilinears', 4)
@@ -2959,8 +3016,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Underestimating the cumulative distribution function
-
+            # Convex relaxation of the cumulative distribution function
             for i in range(4):
                 print(i)
                 if ub[34 + i] <= product_quality[i]:
@@ -2995,6 +3051,8 @@ class StochPooling(UncertainModel):
 
             all_variables_names = [all_variables[i].name() for i in range(all_variables.shape[0])]
 
+            # Add all the bilinear relationships to a list such that the convex relaxations can be added to the problem
+            # formulation.
             bilinear_terms = [[feed_flows[i], feed_flows[i], feed_flows_squared[i]] for i in range(6)]
 
             bilinear_terms.extend(
@@ -3021,6 +3079,9 @@ class StochPooling(UncertainModel):
             summed_terms = [[pool_sigma_bilinears[i * 4], pool_sigma_bilinears[i * 4 + 1], pool_sigma_bilinears[i * 4 + 2],
                              pool_sigma_bilinears[i * 4 + 3], pool_sigma_bilinears_sums[i]] for i in range(4)]
 
+            # We create mirror structures of the ones containing the bilinear terms where instead of the term we focus
+            # on the index the variables have in the list of all variables. This is so we can easily access the right
+            # variables later.
             bilinear_names = []
             bilinear_indices = []
 
@@ -3054,6 +3115,7 @@ class StochPooling(UncertainModel):
                 lb[bilinear_indices[i][2]] = lb[bilinear_indices[i][0]] * lb[bilinear_indices[i][1]]
                 ub[bilinear_indices[i][2]] = ub[bilinear_indices[i][0]] * ub[bilinear_indices[i][1]]
 
+            # Finally we can add the actual McCormick relaxation terms to the constraint set
             for i in range(len(bilinear_indices)):
                 g = casadi.vertcat(g,
                                    -all_variables[bilinear_indices[i][2]] + lb[bilinear_indices[i][0]] * all_variables[
@@ -3084,6 +3146,8 @@ class StochPooling(UncertainModel):
         elif self.problem_name == 'Segarwak':
             pass
 
+        # Now the convex relaxation of the original problem with the given problem bounds can be solved using IPOPT
+        # through CasADI.
         problem = {'x': all_variables, 'f': objective, 'g': g}
         solver = casadi.nlpsol('solver', 'ipopt', problem)
         solution = solver(lbx=lb, ubx=ub, lbg=lbg, ubg=ubg)
@@ -3103,6 +3167,7 @@ class StochPooling(UncertainModel):
         nonconvex problem to obtain a feasible solution that can eb used for spatial branch and bound pruning.
         """
         if self.problem_name == 'Haverly_1' or self.problem_name == 'Haverly_2':
+            # Defining the casadi variables needed to for the original problem
             feed_flows = casadi.SX.sym('feed_flows', 3)
             pool_flows = casadi.SX.sym('pool_flows', 4)
             product_flows = casadi.SX.sym('product_flows', 2)
@@ -3117,6 +3182,7 @@ class StochPooling(UncertainModel):
                                product_sigmas,
                                product_p)
 
+            # Specifying the problem parameters
             feed_price = [6, 16, 10]
             feed_mus = [3, 1, 2]
 
@@ -3126,15 +3192,15 @@ class StochPooling(UncertainModel):
             lb = list(self.lower_bounds[node].copy())
             ub = list(self.upper_bounds[node].copy())
 
+            # Setting the objective function for the problem
             objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_p * product_flows * product_price)
-            # objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_flows * product_price)
 
+            # Initialising the computational structures used to represent the constraint set of the problem
             g = casadi.SX()
             lbg = []
             ubg = []
 
-            ## Pool mass balance
-
+            # Pool mass balance
             g = casadi.vertcat(g,
                                feed_flows[0] + feed_flows[1] - casadi.sum1(pool_flows[:2]),
                                feed_flows[2] - casadi.sum1(pool_flows[2:4])
@@ -3143,8 +3209,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product mass balance
-
+            # Product mass balance
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 2 for i in range(2)]]) - product_flows[0],
                                casadi.sum1(pool_flows[[i * 2 + 1 for i in range(2)]]) - product_flows[1]
@@ -3153,8 +3218,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Pool mu balance
-
+            # Pool mu balance
             g = casadi.vertcat(g,
                                feed_flows[0] * feed_mus[0] + feed_flows[1] * feed_mus[1] - casadi.sum1(
                                    pool_flows[:2]) * pool_mus[0],
@@ -3164,8 +3228,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Pool sigma balance
-
+            # Pool sigma balance
             g = casadi.vertcat(g,
                                feed_flows[0] ** 2 * self.std ** 2 + feed_flows[1] ** 2 * self.std ** 2 -
                                (casadi.sum1(pool_flows[:2]) ** 2 * pool_sigmas[0] ** 2),
@@ -3176,8 +3239,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product mu balance
-
+            # Product mu balance
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 2 for i in range(2)]] * pool_mus[[i for i in range(2)]]) -
                                product_flows[0] * product_mus[0],
@@ -3187,8 +3249,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product sigma balance
-
+            # Product sigma balance
             g = casadi.vertcat(g,
                                casadi.sum1(
                                    pool_flows[[i * 2 for i in range(2)]] ** 2 * pool_sigmas[
@@ -3203,8 +3264,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Deriving the quality satisfaction probability from the cumulative distribution function
-
+            # Deriving the quality satisfaction probability from the cumulative distribution function
             for i in range(2):
                 g = casadi.vertcat(g,
                                    0.5 * (1 + casadi.erf(
@@ -3215,6 +3275,7 @@ class StochPooling(UncertainModel):
                 ubg.append(np.inf)
                 # ubg.append(0) ## Technically this should be a an equality constraint. In practice, the objective is monotonic in the probabilities so writing it as an inequality is valid.
         elif self.problem_name == 'Haverly_3':
+            # Defining the casadi variables needed to for the original problem
             feed_flows = casadi.SX.sym('feed_flows', 3)
             pool_flows = casadi.SX.sym('pool_flows', 4)
             product_flows = casadi.SX.sym('product_flows', 2)
@@ -3229,6 +3290,7 @@ class StochPooling(UncertainModel):
                                product_sigmas,
                                product_p)
 
+            # Specifying the problem parameters
             feed_price = [6, 13, 10]
             feed_mus = [3, 1, 2]
 
@@ -3238,15 +3300,15 @@ class StochPooling(UncertainModel):
             lb = list(self.lower_bounds[node].copy())
             ub = list(self.upper_bounds[node].copy())
 
+            # Setting the objective function of the problem
             objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_p * product_flows * product_price)
-            # objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_flows * product_price)
 
+            # Initialising the computational structures used to represent the constraint set of the problem
             g = casadi.SX()
             lbg = []
             ubg = []
 
-            ## Pool mass balance
-
+            # Pool mass balance
             g = casadi.vertcat(g,
                                feed_flows[0] + feed_flows[1] - casadi.sum1(pool_flows[:2]),
                                feed_flows[2] - casadi.sum1(pool_flows[2:4])
@@ -3255,8 +3317,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product mass balance
-
+            # Product mass balance
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 2 for i in range(2)]]) - product_flows[0],
                                casadi.sum1(pool_flows[[i * 2 + 1 for i in range(2)]]) - product_flows[1]
@@ -3265,8 +3326,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Pool mu balance
-
+            # Pool mu balance
             g = casadi.vertcat(g,
                                feed_flows[0] * feed_mus[0] + feed_flows[1] * feed_mus[1] - casadi.sum1(
                                    pool_flows[:2]) * pool_mus[0],
@@ -3276,8 +3336,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Pool sigma balance
-
+            # Pool sigma balance
             g = casadi.vertcat(g,
                                feed_flows[0] ** 2 * self.std ** 2 + feed_flows[1] ** 2 * self.std ** 2 -
                                (casadi.sum1(pool_flows[:2]) ** 2 * pool_sigmas[0] ** 2),
@@ -3288,8 +3347,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product mu balance
-
+            # Product mu balance
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 2 for i in range(2)]] * pool_mus[[i for i in range(2)]]) -
                                product_flows[0] * product_mus[0],
@@ -3299,8 +3357,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Product sigma balance
-
+            # Product sigma balance
             g = casadi.vertcat(g,
                                casadi.sum1(
                                    pool_flows[[i * 2 for i in range(2)]] ** 2 * pool_sigmas[
@@ -3315,8 +3372,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0])
             ubg.extend([0, 0])
 
-            ## Deriving the quality satisfaction probability from the cumulative distribution function
-
+            # Deriving the quality satisfaction probability from the cumulative distribution function
             for i in range(2):
                 g = casadi.vertcat(g,
                                    0.5 * (1 + casadi.erf(
@@ -3327,6 +3383,7 @@ class StochPooling(UncertainModel):
                 ubg.append(np.inf)
                 # ubg.append(0) ## Technically this should be a an equality constraint. In practice, the objective is monotonic in the probabilities so writing it as an inequality is valid.
         elif self.problem_name == 'Foulds_2':
+            # Defining the casadi variables needed to for the original problem
             feed_flows = casadi.SX.sym('feed_flows', 6)
             pool_flows = casadi.SX.sym('pool_flows', 16)
             product_flows = casadi.SX.sym('product_flows', 4)
@@ -3341,6 +3398,7 @@ class StochPooling(UncertainModel):
                                product_sigmas,
                                product_p)
 
+            # Specifying the problem parameters
             feed_price = [6, 16, 10, 3, 13, 7]
             feed_mus = [3, 1, 2, 3.5, 1.5, 2.5]
 
@@ -3350,15 +3408,15 @@ class StochPooling(UncertainModel):
             lb = list(self.lower_bounds[node].copy())
             ub = list(self.upper_bounds[node].copy())
 
+            # Setting the objective function of the problem
             objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_p * product_flows * product_price)
-            # objective = casadi.sum1(feed_flows * feed_price) - casadi.sum1(product_flows * product_price)
 
+            # Initialising the computational structures used to represent the constraint set of the problem
             g = casadi.SX()
             lbg = []
             ubg = []
 
-            ## Pool mass balance
-
+            # Pool mass balance
             g = casadi.vertcat(g,
                                feed_flows[0] + feed_flows[1] - casadi.sum1(pool_flows[:4]),
                                feed_flows[2] - casadi.sum1(pool_flows[4:8]),
@@ -3369,8 +3427,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Product mass balance
-
+            # Product mass balance
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 4 for i in range(4)]]) - product_flows[0],
                                casadi.sum1(pool_flows[[i * 4 + 1 for i in range(4)]]) - product_flows[1],
@@ -3381,8 +3438,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Pool mu balance
-
+            # Pool mu balance
             g = casadi.vertcat(g,
                                feed_flows[0] * feed_mus[0] + feed_flows[1] * feed_mus[1] - casadi.sum1(
                                    pool_flows[:4]) * pool_mus[0],
@@ -3395,8 +3451,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Pool sigma balance
-
+            # Pool sigma balance
             g = casadi.vertcat(g,
                                feed_flows[0] ** 2 * self.std ** 2 + feed_flows[1] ** 2 * self.std ** 2 -
                                (casadi.sum1(pool_flows[:4]) ** 2 * pool_sigmas[0] ** 2),
@@ -3411,8 +3466,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Product mu balance
-
+            # Product mu balance
             g = casadi.vertcat(g,
                                casadi.sum1(pool_flows[[i * 4 for i in range(4)]] * pool_mus[[i for i in range(4)]]) -
                                product_flows[0] * product_mus[0],
@@ -3429,8 +3483,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Product sigma balance
-
+            # Product sigma balance
             g = casadi.vertcat(g,
                                casadi.sum1(
                                    pool_flows[[i * 4 for i in range(4)]] ** 2 * pool_sigmas[
@@ -3453,8 +3506,7 @@ class StochPooling(UncertainModel):
             lbg.extend([0, 0, 0, 0])
             ubg.extend([0, 0, 0, 0])
 
-            ## Deriving the quality satisfaction probability from the cumulative distribution function
-
+            # Deriving the quality satisfaction probability from the cumulative distribution function
             for i in range(4):
                 g = casadi.vertcat(g,
                                    0.5 * (1 + casadi.erf(
@@ -3467,6 +3519,7 @@ class StochPooling(UncertainModel):
         elif self.problem_name == 'Segarwak':
             pass
 
+        # Now the local optimisation constrained to the particular sub-region of the feasible region can be completed
         problem = {'x': all_variables, 'f': objective, 'g': g}
         solver = casadi.nlpsol('solver', 'ipopt', problem, {'ipopt.tol': self.local_solver_tol})
         solution = solver(lbx=lb, ubx=ub, lbg=lbg, ubg=ubg)
